@@ -6,7 +6,7 @@ import helmet from 'helmet';
 import { testConnection } from './database';
 import { formatUptime } from './utils/general';
 import env from '@/env';
-import { initLogWatcher } from '@/lib/watcher';
+// import { initLogWatcher } from '@/lib/watcher';
 import addErrorHandler from '@/middleware/error-handler';
 import requestLogger from '@/middleware/requestLogger';
 import { RoleBaseAccess } from '@/middleware/roleBasesAccess';
@@ -122,6 +122,7 @@ export default class App {
 	};
 
 	private async loggerWatcher() {
-		initLogWatcher();
+		// temporarily disable log watcher
+		// initLogWatcher();
 	}
 }
