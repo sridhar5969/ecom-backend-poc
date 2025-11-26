@@ -1,0 +1,20 @@
+[
+  {
+    "roleName": "ADMIN",
+    "user": {
+      "name": "Vinayaka Iyer",
+      "email": "vinayaka.iyer@metayb.ai",
+      "isActive": true,
+      "password": "vinayaka999"
+    }
+  },
+  {
+    "roleName": "ADMIN",
+    "user": {
+      "name": "Dev Admin",
+      "email": "devadmin@metayb.com",
+      "isActive": true,
+      "password": "devadmin"
+    }
+  }
+]
