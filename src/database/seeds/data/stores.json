@@ -10,6 +10,8 @@
         "country": "Nigeria",
         "latitude": "6.5244",
         "longitude": "3.3792",
+        "startsAt": "2024-01-01T00:00:00Z",
+        "endsAt": "2024-06-30T23:59:59Z",
         "isActive": true
     },
     {
@@ -23,6 +25,8 @@
         "country": "Nigeria",
         "latitude": "6.4281",
         "longitude": "3.4219",
+        "startsAt": "2024-01-01T00:00:00Z",
+        "endsAt": "2024-06-30T23:59:59Z",
         "isActive": true
     }
 ]

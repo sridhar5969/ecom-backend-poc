@@ -73,6 +73,10 @@ export async function seedMasterData() {
 				...rule,
 				startAt: rule.startAt ? new Date(rule.startAt) : undefined,
 				endAt: rule.endAt ? new Date(rule.endAt) : undefined,
+				rate:
+					typeof rule.rate === 'number'
+						? rule.rate.toString()
+						: rule.rate,
 			})),
 		)
 		.onConflictDoNothing();
