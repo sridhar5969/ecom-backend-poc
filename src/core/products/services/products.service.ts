@@ -5,7 +5,7 @@ import {
 } from './../../../database/schema/products';
 import { db } from '@/database';
 export class ProductsService {
-	constructor() { }
+	constructor() {}
 	async findProductsByCategory(categoryId: string) {
 		// Implementation to find products by category
 		const data = db
@@ -19,6 +19,6 @@ export class ProductsService {
 				eq(productCategories.productId, products.id),
 			)
 			.where(eq(productCategories.categoryId, categoryId));
-		return data
+		return data;
 	}
 }

@@ -7,11 +7,10 @@ import protect from './middleware/protect';
 const router = Router();
 
 // Pre-Auth Web Routes
-router.use('/health', healthRouter)
+router.use('/health', healthRouter);
 
 // Post-Auth Web Routes
-router.use(protect)
+router.use(protect);
 router.use('/products', productsRouter);
 
-export default router
-
+export default router;

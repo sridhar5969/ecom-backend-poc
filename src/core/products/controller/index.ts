@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { memoryUploadMiddleware } from '@/middleware/fileUpload';
 import { ProductsController } from './products.controller';
+import { memoryUploadMiddleware } from '@/middleware/fileUpload';
 
 const productsRouter = Router();
 

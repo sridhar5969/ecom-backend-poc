@@ -1,9 +1,7 @@
-import { z } from "zod/v4"
-
-
+import { z } from 'zod/v4';
 
 const validateGetProductsByCategory = z.object({
-    categoryId: z.string().min(1)
-})
+	categoryId: z.string().min(1),
+});
 
-export default { validateGetProductsByCategory }
+export default { validateGetProductsByCategory };

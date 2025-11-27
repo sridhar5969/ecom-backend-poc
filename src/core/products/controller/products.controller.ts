@@ -2,9 +2,9 @@ import type { Express } from 'express';
 import { Request, Response } from 'express';
 import { ImportMaterialsService } from '../services/import-materials.service';
 import { ProductsService } from '../services/products.service';
+import { SuccessResponse } from '@/utils/apiResponse';
 import logger from '@/utils/logger/logger';
 import { successResponse } from '@/utils/responseFormatter';
-import { SuccessResponse } from '@/utils/apiResponse';
 
 type MemoryUploadedFile = {
 	originalname: string;
@@ -23,7 +23,6 @@ export class ProductsController {
 
 	private static readonly importMaterialsService =
 		new ImportMaterialsService();
-
 
 	public static async getProductsByCategory(req: Request, res: Response) {
 		const task = 'GET_PRODUCTS_BY_CATEGORY';
