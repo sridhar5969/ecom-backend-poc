@@ -12,7 +12,7 @@ import {
 import mime from 'mime-types';
 import env from '@/env';
 import { type MulterFile } from '@/middleware/fileUpload';
-import logger from '@/utils/logger';
+import logger from '@/utils/logger/logger';
 
 class FileHandlerService {
 	private readonly authConnection = env.AZURE_STORAGE_CONNECTION_STRING;

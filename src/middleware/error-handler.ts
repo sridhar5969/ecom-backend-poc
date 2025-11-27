@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { AppGlobalError } from '@/abstractions/formatError';
-import logger from '@/utils/logger';
+import logger from '@/utils/logger/logger';
 
 function tryParseJson(str: string) {
 	try {

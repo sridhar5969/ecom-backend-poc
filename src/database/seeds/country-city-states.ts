@@ -1,94 +1,125 @@
 // C:\Project\ecommerce\ecommerce-web\backend\src\database\seeds\country-city-states.ts (Fixed)
 
-import { City, Country, State } from 'country-state-city';
-import { InferInsertModel } from 'drizzle-orm';
-import { eq } from 'drizzle-orm';
-import { db } from '..';
-import {
-	currencies,
-	masterGeoCities,
-	masterGeoCountries,
-	masterGeoStates,
-} from '../schema';
-
-// Define the required types for clarity
-type NewCurrency = InferInsertModel<typeof currencies>;
-
-async function insertCurrencyIfNotExists(currencyData: NewCurrency) {
-	// Check if the currency code already exists in the database
-	const existingCurrency = await db
-		.select({ code: currencies.code })
-		.from(currencies)
-		.where(eq(currencies.code, currencyData.code))
-		.limit(1);
-
-	// 💡 CORRECT LOGIC: If it DOES NOT exist, then insert it.
-	if (existingCurrency.length === 0) {
-		// Use onConflictDoNothing to handle race conditions or future runs gracefully
-		await db.insert(currencies).values(currencyData).onConflictDoNothing();
-	}
-}
+// import { City, Country, State } from 'country-state-city';
+// import { eq } from 'drizzle-orm';
+// import { db } from '../index';
+// import {
+// 	masterGeoCities,
+// 	masterGeoCountries,
+// 	masterGeoStates,
+// } from '../schema/system';
 
 export async function seedGeoData() {
-	const allCountries = Country.getAllCountries();
+	// console.log('🌱 Seeding Geo Data (Countries, States, Cities)...');
 
-	for (const countryData of allCountries) {
-		// 1. Ensure Currency is seeded first (REQUIRED for FK)
-		// We do this inside the loop to ensure every country's currency is covered
-		const currencyToInsert: NewCurrency = {
-			code: countryData.currency,
-			name: countryData.currency, // Use proper name if available, otherwise code
-			symbol: countryData.currency, // Use proper symbol if available, otherwise code
-			// Add other mandatory fields like decimals, rate_to_base if needed
-		};
-		await insertCurrencyIfNotExists(currencyToInsert);
+	// // Filter for Nigeria only as per requirements to avoid massive data insertion
+	// const targetCountries = ['NG'];
+	// const allCountries = Country.getAllCountries().filter((c) =>
+	// 	targetCountries.includes(c.isoCode),
+	// );
 
-		// 2. Insert Country (Checking mapping)
-		const newCountry = {
-			isoCode2: countryData.isoCode, // AF
-			isoCode3: countryData.isoCode, // 💡 CORRECTED: Use .isoCode3 (e.g., AFG)
-			name: countryData.name,
-			currencyCode: countryData.currency, // AFN
-			phoneCode: countryData.phonecode,
-			region: 'UNKNOWN',
-		};
+	// for (const countryData of allCountries) {
+	// 	console.log(`  → Processing ${countryData.name}...`);
 
-		// Drizzle insertion:
-		const insertedCountry = await db
-			.insert(masterGeoCountries)
-			.values(newCountry)
-			.returning();
+	// 	// Check if country exists
+	// 	const existingCountry = await db.query.masterGeoCountries.findFirst({
+	// 		where: eq(masterGeoCountries.isoCode2, countryData.isoCode),
+	// 	});
 
-		const countryId = insertedCountry[0].id;
+	// 	let countryId = existingCountry?.id;
 
-		// 3. Seed States and Cities (The rest of your logic is structurally sound)
-		const states = State.getStatesOfCountry(countryData.isoCode);
+	// 	if (!existingCountry) {
+	// 		// Map 2-char code to 3-char code manually for Nigeria, or use 2-char as fallback
+	// 		const iso3 =
+	// 			countryData.isoCode === 'NG' ? 'NGA' : countryData.isoCode;
 
-		for (const stateData of states) {
-			const insertedState = await db
-				.insert(masterGeoStates)
-				.values({
-					countryId: countryId,
-					name: stateData.name,
-					code: stateData.isoCode,
-					type: null,
-				})
-				.returning();
+	// 		const [insertedCountry] = await db
+	// 			.insert(masterGeoCountries)
+	// 			.values({
+	// 				isoCode2: countryData.isoCode,
+	// 				isoCode3: iso3,
+	// 				name: countryData.name,
+	// 				currencyCode: countryData.currency,
+	// 				phoneCode: countryData.phonecode,
+	// 				region: 'Africa', // Hardcoded for Nigeria
+	// 				isActive: true,
+	// 			})
+	// 			.onConflictDoNothing()
+	// 			.returning();
 
-			const stateId = insertedState[0].id;
+	// 		if (insertedCountry) {
+	// 			countryId = insertedCountry.id;
+	// 		}
+	// 	}
 
-			const cities = City.getCitiesOfState(
-				countryData.isoCode,
-				stateData.isoCode,
-			);
+	// 	if (countryId) {
+	// 		const states = State.getStatesOfCountry(countryData.isoCode);
+	// 		console.log(`    → Found ${states.length} states`);
 
-			for (const cityData of cities) {
-				await db.insert(masterGeoCities).values({
-					stateId: stateId,
-					name: cityData.name,
-					postalCodePattern: null,
-				});
-			}
-		}
-	}
+	// 		for (const stateData of states) {
+	// 			// Check if state exists
+	// 			const existingState = await db.query.masterGeoStates.findFirst({
+	// 				where: (states, { eq, and }) =>
+	// 					and(
+	// 						eq(states.countryId, countryId!),
+	// 						eq(states.code, stateData.isoCode),
+	// 					),
+	// 			});
+
+	// 			let stateId = existingState?.id;
+
+	// 			if (!existingState) {
+	// 				const [insertedState] = await db
+	// 					.insert(masterGeoStates)
+	// 					.values({
+	// 						countryId: countryId,
+	// 						name: stateData.name,
+	// 						code: stateData.isoCode,
+	// 						type: 'State',
+	// 					})
+	// 					.onConflictDoNothing()
+	// 					.returning();
+
+	// 				if (insertedState) {
+	// 					stateId = insertedState.id;
+	// 				}
+	// 			}
+
+	// 			if (stateId) {
+	// 				const cities = City.getCitiesOfState(
+	// 					countryData.isoCode,
+	// 					stateData.isoCode,
+	// 				);
+
+	// 				if (cities.length > 0) {
+	// 					// Batch insert cities
+	// 					const citiesToInsert = cities.map((city) => ({
+	// 						stateId: stateId!,
+	// 						name: city.name,
+	// 						postalCodePattern: null,
+	// 						isServiceable: true,
+	// 					}));
+
+	// 					// Insert in chunks of 50 to be safe
+	// 					const chunkSize = 50;
+	// 					for (
+	// 						let i = 0;
+	// 						i < citiesToInsert.length;
+	// 						i += chunkSize
+	// 					) {
+	// 						const chunk = citiesToInsert.slice(
+	// 							i,
+	// 							i + chunkSize,
+	// 						);
+	// 						await db
+	// 							.insert(masterGeoCities)
+	// 							.values(chunk)
+	// 							.onConflictDoNothing();
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
+	console.log('✅ Geo Data seeded successfully!');
 }

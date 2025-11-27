@@ -1,6 +1,6 @@
 import chokidar, { FSWatcher } from 'chokidar';
-import { fileLoggerBlob } from '@/utils/fileLoggerBlob';
-import logger from '@/utils/logger';
+import { fileLoggerBlob } from '@/utils/logger/fileLoggerBlob';
+import logger from '@/utils/logger/logger';
 
 export function initLogWatcher(): FSWatcher {
 	const logDir = './logs';

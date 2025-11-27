@@ -2,8 +2,8 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import * as schema from './schema';
 import env from '@/env';
-import DrizzleWinstonLogger from '@/utils/drizzleLogger';
-import logger from '@/utils/logger';
+import DrizzleWinstonLogger from '@/utils/logger/drizzleLogger';
+import logger from '@/utils/logger/logger';
 
 const pool = new Pool({
 	host: env.DB_IP,

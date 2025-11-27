@@ -1,9 +1,9 @@
 import { promises as fs } from 'node:fs';
 import * as path from 'node:path';
 import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
-import { getCurrentDate } from './day';
+import { getCurrentDate } from '../day';
 import env from '@/env';
-import logger from '@/utils/logger';
+import logger from '@/utils/logger/logger';
 
 class FileLoggerBlob {
 	private getConnection() {

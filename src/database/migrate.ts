@@ -1,7 +1,7 @@
 import path from 'path';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { db, closeConnection } from './index';
-import logger from '@/utils/logger';
+import logger from '@/utils/logger/logger';
 
 async function main() {
 	logger.info('Running migrations...');

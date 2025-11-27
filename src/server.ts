@@ -6,7 +6,7 @@ config({ quiet: true });
 import App from './App';
 import { closeConnection, testConnection } from '@/database';
 import env from '@/env';
-import logger from '@/utils/logger';
+import logger from '@/utils/logger/logger';
 // eslint-disable-next-line no-restricted-properties
 process.env.TZ = 'UTC';
 
