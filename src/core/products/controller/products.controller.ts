@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { ImportMaterialsService } from '../services/import-materials.service';
 import { ProductsService } from '../services/products.service';
-import { SuccessResponse } from '@/utils/apiResponse';
+import { NotFoundResponse, SuccessResponse } from '@/utils/apiResponse';
 import logger from '@/utils/logger/logger';
 import { successResponse } from '@/utils/responseFormatter';
 
@@ -35,6 +35,26 @@ export class ProductsController {
 				await ProductsController.productsService.getAllProducts(params);
 			successResponse(data);
 			new SuccessResponse(res, 'success', data).send();
+		} catch (error) {
+			logger.error(`ERROR_${task}`, { error });
+			throw error;
+		}
+	}
+
+	public static async getProductBySlugController(
+		req: Request,
+		res: Response,
+	) {
+		const task = 'GET_PRODUCT_BY_SLUG';
+		try {
+			const { slug } = req.params as { slug?: string };
+			const data =
+				await ProductsController.productsService.getProductBySlug(slug);
+			if (!data) {
+				return new NotFoundResponse(res, 'Product not found').send();
+			}
+			successResponse(data);
+			return new SuccessResponse(res, 'success', data).send();
 		} catch (error) {
 			logger.error(`ERROR_${task}`, { error });
 			throw error;
