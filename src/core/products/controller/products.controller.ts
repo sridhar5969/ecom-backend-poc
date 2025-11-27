@@ -54,7 +54,7 @@ export class ProductsController {
 			if (!data) {
 				return new NotFoundResponse(res, 'Product not found').send();
 			}
-			return new SuccessResponse(res, data).send();
+			return new SuccessResponse(res, { data }).send();
 		} catch (error) {
 			logger.error(`ERROR_${task}`, { error });
 			throw error;
