@@ -25,7 +25,6 @@ export type ProductQueryParams = {
 
 export class ProductsService {
 	constructor() {}
-
 	async findProductsByCategory(categoryId: string) {
 		const data = db
 			.select({
@@ -213,7 +212,7 @@ export class ProductsService {
 		};
 	}
 
-	async getProductBySlug(slugValue:string) {
+	async getProductBySlug(slugValue: string) {
 		if (!slugValue) {
 			throw new Error('Product slug is required');
 		}
