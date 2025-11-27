@@ -1,8 +1,7 @@
-﻿
-import { eq, inArray } from 'drizzle-orm';
+﻿import { eq, inArray } from 'drizzle-orm';
 import { StatusCodes } from 'http-status-codes';
 import AppError from '@/abstractions/AppError';
-import { db, type dbConnection } from '@/database';
+import { db } from '@/database';
 import {
 	brands,
 	categories,
@@ -10,10 +9,10 @@ import {
 	productVariants,
 	products,
 } from '@/database/schema/products';
+import { currencies } from '@/database/schema/system';
 import { normalizeString } from '@/utils/general';
 import logger from '@/utils/logger/logger';
 import { handleServiceError } from '@/utils/serviceErrorHandler';
-
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -89,14 +88,14 @@ export class ImportMaterialsService {
 		'noodles-pasta',
 	];
 
-	private readonly allowedCurrencyCodes = new Set([
+	private allowedCurrencyCodes = new Set<string>([
 		'NGN',
 		'USD',
 		'EUR',
 		'GBP',
 	]);
 
-	private readonly currencyAliasMap: Record<string, string> = {
+	private currencyAliasMap: Record<string, string> = {
 		NG1: 'NGN',
 		NGA: 'NGN',
 		NG: 'NGN',
@@ -134,6 +133,17 @@ export class ImportMaterialsService {
 			}
 
 			const groupedMaterials = this.groupByMaterial(rows);
+
+			const currenciesList = await db
+				.select({ code: currencies.code })
+				.from(currencies);
+			if (currenciesList.length) {
+				this.allowedCurrencyCodes = new Set(
+					currenciesList
+						.map((c) => c.code?.trim().toUpperCase())
+						.filter((code): code is string => Boolean(code)),
+				);
+			}
 
 			const summary = await db.transaction(async (tx) => {
 				const brandMap = await this.resolveBrandMap(
@@ -623,8 +633,9 @@ export class ImportMaterialsService {
 			canonicalCategoryId:
 				slugMap.get('noodles-pasta') ??
 				slugMap.get(
-					this.defaultCategorySlugs[this.defaultCategorySlugs.length - 1] ??
-					'',
+					this.defaultCategorySlugs[
+						this.defaultCategorySlugs.length - 1
+					] ?? '',
 				) ??
 				null,
 			categoryIds: Array.from(slugMap.values()).filter(Boolean),
