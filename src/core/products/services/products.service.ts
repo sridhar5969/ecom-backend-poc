@@ -206,9 +206,13 @@ export class ProductsService {
 		}));
 
 		return {
-			data: items,
-			totalCount: total,
-			totalPages: Math.ceil(total / limit),
+			items,
+			meta: {
+				total: total,
+				page: page,
+				limit: limit,
+				last_page: Math.ceil(total / limit),
+			},
 		};
 	}
 

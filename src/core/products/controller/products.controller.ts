@@ -33,8 +33,11 @@ export class ProductsController {
 			};
 			const data =
 				await ProductsController.productsService.getAllProducts(params);
-			successResponse(data);
-			new SuccessResponse(res, 'success', data).send();
+			return res.json({
+				...data,
+				success: true,
+				timestamp: new Date().toISOString(),
+			});
 		} catch (error) {
 			logger.error(`ERROR_${task}`, { error });
 			throw error;
