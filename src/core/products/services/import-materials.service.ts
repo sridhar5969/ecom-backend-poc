@@ -87,7 +87,7 @@ export class ImportMaterialsService {
 		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 	]);
 
-	private allowedCurrencyCodes: Set<string>;
+	private allowedCurrencyCodes: Set<string> = new Set(['NGN']);
 
 	private static currencyCodesCache: CurrencyCache | null = null;
 
@@ -245,6 +245,7 @@ export class ImportMaterialsService {
 
 			return summary;
 		} catch (error) {
+			logger.error(error)
 			return handleServiceError(
 				error,
 				'Unable to import SAP materials data',
