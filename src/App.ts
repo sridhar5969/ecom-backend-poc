@@ -4,6 +4,7 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import { testConnection } from './database';
+import router from './router';
 import { formatUptime } from './utils/general';
 import env from '@/env';
 // import { initLogWatcher } from '@/lib/watcher';
@@ -11,7 +12,6 @@ import addErrorHandler from '@/middleware/error-handler';
 import requestLogger from '@/middleware/requestLogger';
 import { RoleBaseAccess } from '@/middleware/roleBasesAccess';
 import { errorResponse } from '@/utils/responseFormatter';
-import router from './router';
 export default class App {
 	public express: express.Application;
 
@@ -26,13 +26,9 @@ export default class App {
 		// add all global middleware like cors
 		this.middleware();
 
+		this.express.use('/api', router);
 
-		this.express.use(router)
-
-		
 		RoleBaseAccess.init();
-
-
 
 		this.unhandlerRoute();
 
@@ -42,8 +38,6 @@ export default class App {
 		// Blob Logger Initiate
 		this.loggerWatcher();
 	}
-
-
 
 	private middleware(): void {
 		// Security headers
@@ -82,8 +76,6 @@ export default class App {
 			res.status(404).json(errorResp);
 		});
 	}
-
-
 
 	private async loggerWatcher() {
 		// temporarily disable log watcher

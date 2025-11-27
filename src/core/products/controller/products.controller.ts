@@ -4,7 +4,7 @@ import { successResponse } from '@/utils/responseFormatter';
 
 export class ProductsController {
 	private static productsService: ProductsService;
-	constructor() { }
+	constructor() {}
 
 	public static async getProductsByCategory(req: Request, res: Response) {
 		const task = 'GET_PRODUCTS_BY_CATEGORY';
