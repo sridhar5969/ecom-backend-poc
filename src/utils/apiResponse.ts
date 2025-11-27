@@ -18,16 +18,22 @@ abstract class ApiResponse {
 	constructor(
 		protected res: Response,
 		protected statusCode: ResponseStatus,
-		protected message: string | Record<string, unknown>,
+		protected message?: string | Record<string, unknown>,
 		protected data: unknown | null = null,
 		protected request: Request | null = null,
 	) {}
 
 	public send(): void {
-		this.res.status(this.statusCode).json({
-			data: this.data,
-			message: this.message,
-		});
+		const success = this.statusCode >= 200 && this.statusCode < 300;
+		const payload: Record<string, unknown> = {
+			success,
+			data: this.data ?? null,
+			timestamp: new Date().toISOString(),
+		};
+		if (this.message !== undefined) {
+			payload.message = this.message;
+		}
+		this.res.status(this.statusCode).json(payload);
 	}
 }
 
@@ -50,8 +56,14 @@ export class BadRequestResponse extends ApiResponse {
 }
 
 export class SuccessResponse extends ApiResponse {
-	constructor(res: Response, message: string, data?: unknown) {
-		super(res, ResponseStatus.SUCCESS, message, data);
+	constructor(res: Response, message: string, data?: unknown);
+	constructor(res: Response, data?: unknown);
+	constructor(res: Response, arg2?: string | unknown, arg3?: unknown) {
+		if (typeof arg2 === 'string') {
+			super(res, ResponseStatus.SUCCESS, arg2, arg3);
+			return;
+		}
+		super(res, ResponseStatus.SUCCESS, undefined, arg2);
 	}
 }
 

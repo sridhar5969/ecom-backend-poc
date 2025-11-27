@@ -33,11 +33,7 @@ export class ProductsController {
 			};
 			const data =
 				await ProductsController.productsService.getAllProducts(params);
-			return res.json({
-				...data,
-				success: true,
-				timestamp: new Date().toISOString(),
-			});
+			return new SuccessResponse(res, data).send();
 		} catch (error) {
 			logger.error(`ERROR_${task}`, { error });
 			throw error;
@@ -52,12 +48,13 @@ export class ProductsController {
 		try {
 			const { slug } = req.params as { slug?: string };
 			const data =
-				await ProductsController.productsService.getProductBySlug(slug);
+				await ProductsController.productsService.getProductBySlug(
+					slug ?? '',
+				);
 			if (!data) {
 				return new NotFoundResponse(res, 'Product not found').send();
 			}
-			successResponse(data);
-			return new SuccessResponse(res, 'success', data).send();
+			return new SuccessResponse(res, data).send();
 		} catch (error) {
 			logger.error(`ERROR_${task}`, { error });
 			throw error;
