@@ -27,9 +27,17 @@ abstract class ApiResponse {
 		const success = this.statusCode >= 200 && this.statusCode < 300;
 		const payload: Record<string, unknown> = {
 			success,
-			data: this.data ?? null,
 			timestamp: new Date().toISOString(),
 		};
+		if (
+			this.data &&
+			typeof this.data === 'object' &&
+			!Array.isArray(this.data)
+		) {
+			Object.assign(payload, this.data as object);
+		} else if (this.data !== null && this.data !== undefined) {
+			payload.data = this.data;
+		}
 		if (this.message !== undefined) {
 			payload.message = this.message;
 		}
