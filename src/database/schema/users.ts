@@ -7,14 +7,14 @@ import {
 	text,
 	timestamp,
 } from 'drizzle-orm/pg-core';
-import { userRoleEnum, authMethodEnum } from './_Enums';
+import { authMethodEnum, userRoleEnum } from './_Enums';
 
 export const users = pgTable('users', {
 	id: uuid('id').defaultRandom().primaryKey(),
 	email: varchar('email').unique(),
 	phoneNumber: varchar('phone_number').unique(),
 	passwordHash: text('password_hash'),
-	fullName: varchar('full_name'),
+	name: varchar('full_name'),
 	role: userRoleEnum('role').default('customer'),
 	isActive: boolean('is_active').default(true),
 	primaryAuthMethod: authMethodEnum('primary_auth_method'),

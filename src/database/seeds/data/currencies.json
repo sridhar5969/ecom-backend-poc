@@ -1,0 +1,30 @@
+[
+    {
+        "code": "USD",
+        "name": "US Dollar",
+        "symbol": "$",
+        "decimalPlaces": 2,
+        "isActive": true
+    },
+    {
+        "code": "EUR",
+        "name": "Euro",
+        "symbol": "€",
+        "decimalPlaces": 2,
+        "isActive": true
+    },
+    {
+        "code": "GBP",
+        "name": "British Pound",
+        "symbol": "£",
+        "decimalPlaces": 2,
+        "isActive": true
+    },
+    {
+        "code": "NGN",
+        "name": "Nigerian Naira",
+        "symbol": "₦",
+        "decimalPlaces": 2,
+        "isActive": true
+    }
+]

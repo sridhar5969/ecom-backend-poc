@@ -1,9 +1,6 @@
 import { pgEnum } from 'drizzle-orm/pg-core';
 
-export const productTypeEnum = pgEnum('product_type', [
-	'simple',
-	'bundle',
-]);
+export const productTypeEnum = pgEnum('product_type', ['simple', 'bundle']);
 
 export const orderStatusEnum = pgEnum('order_status', [
 	'pending',
@@ -33,7 +30,7 @@ export const userRoleEnum = pgEnum('user_role', [
 	'manager',
 	'customer',
 ]);
-
+export type UserRole = (typeof userRoleEnum.enumValues)[number]; // Result: "admin" | "manager" | "customer"
 export const authMethodEnum = pgEnum('auth_method', [
 	'email_password',
 	'phone_otp',

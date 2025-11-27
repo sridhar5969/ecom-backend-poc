@@ -50,7 +50,7 @@ export default class App {
 		// Mobileroutes
 
 		// Web
-		this.express.use('/web', webPreAuthRoutes());
+		this.express.use('/api', webPreAuthRoutes());
 
 		// Health Check
 		this.express.use('/health-check', this.healthRoute);

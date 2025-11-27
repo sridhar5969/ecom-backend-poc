@@ -21,7 +21,16 @@ const fileTransport = new DailyRotateFile({
 });
 
 const { Console } = transports;
-const { combine, timestamp, errors, metadata, simple, colorize, json } = format;
+const {
+	combine,
+	timestamp,
+	errors,
+	metadata,
+	simple,
+	colorize,
+	json,
+	// prettyPrint,
+} = format;
 
 const logger: Logger = createLogger({
 	level: 'debug', //! global level should be the most verbose so that the transports can control levels output

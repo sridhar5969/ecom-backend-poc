@@ -1,19 +1,16 @@
 import { Router } from 'express';
-import AuthWebController from '../../components/web/auth/auth-web.controller';
-import FileWebController from '../../components/web/file/file-web.controller';
+import contentRouter from './content.routes';
+import ordersRouter from './orders.routes';
+import paymentRouter from './payment.routes';
+import productsRouter from './products.routes';
 
-/**
- * Here, you can register routes by instantiating the controller.
- *
- */
-export default function webPreAuthRoutes(): Router {
+export default function authRoutes(): Router {
 	const router = Router();
 
-	const fileWebController: FileWebController = new FileWebController();
-	router.use('/file', fileWebController.register()); // some foldername can be protected
-
-	const authWebController: AuthWebController = new AuthWebController();
-	router.use('/auth', authWebController.register());
+	router.use('/api/v1', productsRouter);
+	router.use('/api/v1', ordersRouter);
+	router.use('/api/v1', paymentRouter);
+	router.use('/api/v1', contentRouter);
 
 	return router;
 }

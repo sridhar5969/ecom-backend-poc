@@ -1,0 +1,6 @@
+[
+    { "code": "DAMAGED", "label": "Damaged in transit", "requiresPhoto": true },
+    { "code": "WRONG_ITEM", "label": "Received wrong item", "requiresPhoto": true },
+    { "code": "DEFECTIVE", "label": "Item defective", "requiresPhoto": true },
+    { "code": "CHANGED_MIND", "label": "Changed mind", "requiresPhoto": false }
+]

@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Standard Shipping",
+        "fulfillmentType": "delivery",
+        "baseRate": 500000,
+        "currency": "NGN",
+        "minOrderAmount": 0,
+        "maxOrderAmount": null,
+        "estimatedDays": 5,
+        "isActive": true
+    },
+    {
+        "name": "Express Shipping",
+        "fulfillmentType": "express_delivery",
+        "baseRate": 1500000,
+        "currency": "NGN",
+        "minOrderAmount": 0,
+        "maxOrderAmount": null,
+        "estimatedDays": 2,
+        "isActive": true
+    },
+    {
+        "name": "Same Day Delivery",
+        "fulfillmentType": "same_day_delivery",
+        "baseRate": 2500000,
+        "currency": "NGN",
+        "minOrderAmount": 1000000,
+        "maxOrderAmount": null,
+        "estimatedDays": 0,
+        "isActive": true
+    },
+    {
+        "name": "Self Pickup",
+        "fulfillmentType": "self_pickup",
+        "baseRate": 0,
+        "currency": "NGN",
+        "minOrderAmount": 0,
+        "maxOrderAmount": null,
+        "estimatedDays": 1,
+        "isActive": true
+    }
+]

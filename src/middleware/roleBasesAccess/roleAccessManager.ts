@@ -1,10 +1,7 @@
-import { eq } from 'drizzle-orm';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod/v4';
-import { ModuleEnumType } from './const';
-import { db } from '@/database';
-import { permissions, rolePermissions, roles } from '@/database/schema';
-import logger from '@/lib/logger';
+import { PermissionsManagementService } from '@/core/auth/services/permissions.service';
+import logger from '@/utils/logger';
 
 export const RoleModuleAccessSchema = z.array(
 	z.object({
@@ -15,7 +12,7 @@ export const RoleModuleAccessSchema = z.array(
 );
 
 export class RoleBaseAccess {
-	private static roleModule: Map<number, Set<string>> = new Map();
+	private static roleModule: Map<string, Set<string>> = new Map();
 	private static intervalId: NodeJS.Timeout;
 
 	private static async getRoleModuleData() {
@@ -23,42 +20,27 @@ export class RoleBaseAccess {
 			logger.info(
 				'[RoleBaseAccess] Refreshing role-module access data...',
 			);
+			const data =
+				await new PermissionsManagementService().getAllPermissions();
 
-			const results = await db
-				.select({
-					roleId: roles.id,
-					roleName: roles.name,
-					permission: permissions.code,
-				})
-				.from(roles)
-				.innerJoin(
-					rolePermissions,
-					eq(rolePermissions.roleId, roles.id),
-				)
-				.innerJoin(
-					permissions,
-					eq(permissions.id, rolePermissions.permissionId),
-				);
+			// Clear existing data
+			this.roleModule.clear();
 
-			const parsed = RoleModuleAccessSchema.safeParse(results);
+			// Build the role-module map from database data
+			const roleModuleMap = new Map<string, Set<string>>();
 
-			if (!parsed.success) {
-				logger.error(
-					`Rolebased access failed: ${z.prettifyError(parsed.error)}`,
-				);
-				throw new Error('Rolebased access failed');
-			}
+			data.forEach((role) => {
+				if (role.permissions && role.permissions.length > 0) {
+					const permissionSet = new Set<string>(role.permissions);
+					roleModuleMap.set(role.role, permissionSet);
+				}
+			});
 
-			const moduleMap = new Map<number, Set<string>>();
+			this.roleModule = roleModuleMap;
 
-			for (const row of parsed.data) {
-				if (!moduleMap.has(row.roleId))
-					moduleMap.set(row.roleId, new Set());
-
-				moduleMap.get(row.roleId).add(row.permission);
-			}
-
-			this.roleModule = moduleMap;
+			logger.info(
+				`[RoleBaseAccess] Loaded ${this.roleModule.size} roles with permissions`,
+			);
 		} catch (err) {
 			logger.error('Role-based access failed', err);
 		}
@@ -78,19 +60,17 @@ export class RoleBaseAccess {
 		logger.info('[RoleBaseAccess] Interval stopped');
 	}
 
-	static checkAccess(roleId: number, keyword: ModuleEnumType): boolean {
-		const modules = this.roleModule.get(roleId);
-		return modules?.has(keyword) ?? false;
+	static checkAccess(role: string, keyword: string): boolean {
+		const modules = this.roleModule.get(role);
+		if (!modules) return false;
+		if (!modules.has(keyword)) return false;
+		return true;
 	}
 
-	static middleware(keyword: ModuleEnumType) {
+	static middleware(keyword: string) {
 		return (req: Request, res: Response, next: NextFunction) => {
-			// Check if user has the permission in their aggregated permissions
-			// (which includes permissions from all their roles)
-			const hasPermission =
-				req.user_details.permissions?.includes(keyword);
-
-			if (!hasPermission) {
+			const role = req.user_details.role;
+			if (!role || !RoleBaseAccess.checkAccess(role, keyword)) {
 				return res
 					.status(403)
 					.json({ message: 'Forbidden: Access Denied' });

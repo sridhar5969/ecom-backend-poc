@@ -1,0 +1,9 @@
+[
+    {
+        "countryCode": "NG",
+        "name": "VAT",
+        "rate": 0.075,
+        "priority": 1,
+        "startAt": "2024-01-01T00:00:00Z"
+    }
+]

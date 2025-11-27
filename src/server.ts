@@ -1,17 +1,18 @@
-// eslint-disable-next-line import/order -- dotenv must be loaded first
-import { config } from 'dotenv';
 import * as http from 'http';
 import { AddressInfo } from 'net';
-
+import { config } from 'dotenv';
 config({ quiet: true });
 
 import App from './App';
 import { closeConnection, testConnection } from '@/database';
 import env from '@/env';
-import logger from '@/lib/logger';
+import logger from '@/utils/logger';
+// eslint-disable-next-line no-restricted-properties
+process.env.TZ = 'UTC';
 
 const app: App = new App();
 let server: http.Server;
+// const cronService = new CronService();
 
 function serverError(error: NodeJS.ErrnoException): void {
 	if (error.syscall !== 'listen') throw error;
@@ -54,6 +55,7 @@ process.on('uncaughtException', async (error) => {
 		stack: error.stack,
 	});
 
+	// cronService.stopAllCrons();
 	await closeConnection();
 
 	if (server) {
@@ -73,6 +75,7 @@ process.on('unhandledRejection', async (reason: Error) => {
 		stack: reason.stack,
 	});
 
+	// cronService.stopAllCrons();
 	await closeConnection();
 
 	if (server) {

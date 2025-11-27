@@ -1,9 +1,6 @@
 import * as express from 'express';
-import { z, ZodError } from 'zod/v4';
-import AppError from '@/abstractions/AppError';
 import { AppGlobalError } from '@/abstractions/formatError';
-import logger from '@/lib/logger';
-import { errorResponse } from '@/utils/responseFormatter';
+import logger from '@/utils/logger';
 
 function tryParseJson(str: string) {
 	try {
@@ -14,47 +11,20 @@ function tryParseJson(str: string) {
 }
 
 const addErrorHandler = (
-	err: Error | AppGlobalError,
+	err: AppGlobalError,
 	req: express.Request,
 	res: express.Response,
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	next: express.NextFunction,
 ) => {
-	if (res.headersSent) {
-		return next(err);
-	}
+	const parsedStackError = tryParseJson(err.stackErr); // For Zod errors
 
-	// Convert ZodError, AppError, or regular Error to AppGlobalError if needed
-	let appError: AppGlobalError;
-	if (err instanceof ZodError) {
-		// Format ZodError similar to formatError utility
-		const flattened = z.flattenError(err);
-		appError = new AppGlobalError(
-			'Validation Error',
-			400,
-			JSON.stringify(flattened),
-		);
-	} else if (err instanceof AppError) {
-		// Convert AppError to AppGlobalError preserving status code and message
-		appError = new AppGlobalError(err.message, err.statusCode, err.stack);
-	} else if (err instanceof AppGlobalError) {
-		appError = err;
-	} else {
-		// Regular Error - convert to AppGlobalError
-		appError = new AppGlobalError(
-			err.message || 'Internal Server Error',
-			500,
-			err.stack,
-		);
-	}
-
-	const parsedStackError = tryParseJson(appError.stackErr); // For Zod errors
-
-	const statusCode = appError.statusCode || 500;
+	const statusCode = err.statusCode || 500;
 	const clientMessage =
-		statusCode >= 500 ? 'Something went wrong' : appError.message;
+		statusCode >= 500 ? 'Something went wrong' : err.message;
 
 	logger.error('API error', {
-		message: appError.message || 'Internal Server Error',
+		message: err.message || 'Internal Server Error',
 		statusCode,
 		request: {
 			method: req.method,
@@ -64,17 +34,14 @@ const addErrorHandler = (
 		},
 		userDetails: req?.user_details,
 		parsedStackError,
-		stack: appError.stack,
-		actualStack: appError.stackErr,
+		stack: err.stack,
+		actualStack: err.stackErr,
 	});
 
-	const errorResp = errorResponse(
-		clientMessage,
-		parsedStackError?.fieldErrors,
-		statusCode,
-	);
-
-	res.status(statusCode).json(errorResp);
+	res.status(statusCode).json({
+		message: clientMessage,
+		...(parsedStackError && { errors: parsedStackError.fieldErrors }),
+	});
 };
 
 export default addErrorHandler;

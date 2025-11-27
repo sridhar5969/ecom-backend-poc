@@ -1,0 +1,8 @@
+[
+    { "name": "view_dashboard", "description": "Can view dashboard" },
+    { "name": "manage_users", "description": "Can manage users" },
+    { "name": "manage_products", "description": "Can manage products" },
+    { "name": "manage_orders", "description": "Can manage orders" },
+    { "name": "manage_content", "description": "Can manage content" },
+    { "name": "view_reports", "description": "Can view reports" }
+]

@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
 import { getCurrentDate } from './day';
 import env from '@/env';
-import logger from '@/lib/logger';
+import logger from '@/utils/logger';
 
 class FileLoggerBlob {
 	private getConnection() {

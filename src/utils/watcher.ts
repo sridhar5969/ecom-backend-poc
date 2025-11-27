@@ -1,6 +1,6 @@
 import chokidar, { FSWatcher } from 'chokidar';
-import logger from '@/lib/logger';
 import { fileLoggerBlob } from '@/utils/fileLoggerBlob';
+import logger from '@/utils/logger';
 
 export function initLogWatcher(): FSWatcher {
 	const logDir = './logs';
@@ -16,13 +16,15 @@ export function initLogWatcher(): FSWatcher {
 		},
 	});
 
-	watcher.on('add', async () => {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	watcher.on('add', async (filePath) => {
 		logger.debug('ADD | FILE STARTED UPLOADING | WATCHER');
 		await fileLoggerBlob.uploadFile();
 		logger.debug('ADD | FILE STARTED DONE | WATCHER');
 	});
 
-	watcher.on('change', async () => {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	watcher.on('change', async (filePath) => {
 		logger.debug('CHANGE | FILE STARTED UPLOADING | WATCHER');
 		await fileLoggerBlob.uploadFile();
 		logger.debug('CHANGE | FILE STARTED DONE | WATCHER');

@@ -5,6 +5,7 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export const getCurrentDate = (tz: string = 'Asia/Kolkata') => {
-	return dayjs().tz(tz).format('YYYY-MM-DD');
+// eslint-disable-next-line @typescript-eslint/no-shadow
+export const getCurrentDate = (timezone: string = 'Asia/Kolkata') => {
+	return dayjs().tz(timezone).format('YYYY-MM-DD');
 };
