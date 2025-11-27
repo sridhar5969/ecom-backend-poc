@@ -30,7 +30,7 @@ const addErrorHandler = (
 			method: req.method,
 			url: req.url,
 			headers: req.headers,
-			body: req.body,
+			// body: req.body,
 		},
 		userDetails: req?.user_details,
 		parsedStackError,

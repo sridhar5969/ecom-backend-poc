@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
-import authRouter from './core/auth/controller';
-import healthRouter from './core/health-check';
-import productsRouter from './core/products/controller';
-import sessionRouter from './core/session/controller';
+import authRouter from './modules/auth/controller';
+import healthRouter from './modules/health-check';
+import productsRouter from './modules/products/controller';
+import sessionRouter from './modules/session/controller';
 import protect from './middleware/protect';
 
 const router = Router();

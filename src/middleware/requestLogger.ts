@@ -112,14 +112,14 @@ export function requestLogger(
 			// Server errors
 			logger.error('HTTP Request', {
 				...logData,
-				requestBody: sanitizeRequestBody(req.body),
+				// requestBody: sanitizeRequestBody(req.body),
 				requestQuery: req.query,
 			});
 		} else if (res.statusCode >= 400) {
 			// Client errors
 			logger.warn('HTTP Request', {
 				...logData,
-				requestBody: sanitizeRequestBody(req.body),
+				// requestBody: sanitizeRequestBody(req.body),
 				requestQuery: req.query,
 			});
 		} else {

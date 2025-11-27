@@ -34,7 +34,7 @@ export default class App {
 		this.express.use(addErrorHandler);
 
 		// Blob Logger Initiate
-		this.loggerWatcher();
+		// this.loggerWatcher();
 	}
 
 	private middleware(): void {

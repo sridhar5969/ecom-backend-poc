@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod/v4';
-import { PermissionsManagementService } from '@/core/auth/services/permissions.service';
+import { PermissionsManagementService } from '@/modules/auth/services/permissions.service';
 import logger from '@/utils/logger/logger';
 
 export const RoleModuleAccessSchema = z.array(

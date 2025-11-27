@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import AppError from '@/abstractions/AppError';
 
 import formatError from '@/abstractions/formatError';
-import { PermissionsManagementService } from '@/core/auth/services/permissions.service';
+import { PermissionsManagementService } from '@/modules/auth/services/permissions.service';
 import { UserRole } from '@/database/schema';
 import { safeJwtVerify } from '@/utils/validations';
 
