@@ -42,6 +42,7 @@ export const products = pgTable('products', {
 	),
 	title: varchar('title'),
 	flags: jsonb('flags'),
+	metadata: jsonb('metadata'),
 	slug: varchar('slug').unique(),
 	description: text('description'),
 	type: productTypeEnum('type').default('simple'),

@@ -10,7 +10,7 @@ const router = Router();
 router.use('/health', healthRouter);
 
 // Post-Auth Web Routes
-router.use(protect);
+// router.use(protect);
 router.use('/products', productsRouter);
 
 export default router;

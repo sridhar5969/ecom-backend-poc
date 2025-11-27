@@ -1,4 +1,3 @@
-import type { Express } from 'express';
 import { Request, Response } from 'express';
 import { ImportMaterialsService } from '../services/import-materials.service';
 import { ProductsService } from '../services/products.service';
@@ -24,14 +23,16 @@ export class ProductsController {
 	private static readonly importMaterialsService =
 		new ImportMaterialsService();
 
-	public static async getProductsByCategory(req: Request, res: Response) {
-		const task = 'GET_PRODUCTS_BY_CATEGORY';
+	public static async getAllProductsController(req: Request, res: Response) {
+		const task = 'GET_ALL_PRODUCTS';
 		try {
-			const { categoryId } = req.params;
+			const { limit = 10, page = 1 } = req.query;
+			const params = {
+				limit: Number(limit),
+				page: Number(page),
+			};
 			const data =
-				await ProductsController.productsService.findProductsByCategory(
-					categoryId,
-				);
+				await ProductsController.productsService.getAllProducts(params);
 			successResponse(data);
 			new SuccessResponse(res, 'success', data).send();
 		} catch (error) {

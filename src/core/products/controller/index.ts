@@ -4,14 +4,12 @@ import { memoryUploadMiddleware } from '@/middleware/fileUpload';
 
 const productsRouter = Router();
 
-productsRouter.get(
-	'/category/:categoryId',
-	ProductsController.getProductsByCategory,
-);
+productsRouter.get('/', ProductsController.getAllProductsController);
 
 productsRouter.post(
 	'/import-materials',
 	memoryUploadMiddleware,
 	ProductsController.importMaterials,
 );
+
 export default productsRouter;

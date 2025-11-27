@@ -74,6 +74,11 @@ type MaterialsImportSummary = {
 	skippedRows: number;
 };
 
+type CurrencyCache = {
+	codes: Set<string>;
+	expiresAt: number;
+};
+
 export class ImportMaterialsService {
 	private readonly supportedMimeTypes = new Set([
 		'text/csv',
@@ -82,26 +87,11 @@ export class ImportMaterialsService {
 		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 	]);
 
-	private readonly defaultCategorySlugs = [
-		'groceries',
-		'food-cupboard',
-		'noodles-pasta',
-	];
+	private allowedCurrencyCodes: Set<string>;
 
-	private allowedCurrencyCodes = new Set<string>([
-		'NGN',
-		'USD',
-		'EUR',
-		'GBP',
-	]);
+	private static currencyCodesCache: CurrencyCache | null = null;
 
-	private currencyAliasMap: Record<string, string> = {
-		NG1: 'NGN',
-		NGA: 'NGN',
-		NG: 'NGN',
-		NAIRA: 'NGN',
-		'N₦': 'NGN',
-	};
+	private static readonly currencyCacheTtlMs = 15 * 60 * 1000;
 
 	public async import(
 		file?: UploadFilePayload,
@@ -133,17 +123,8 @@ export class ImportMaterialsService {
 			}
 
 			const groupedMaterials = this.groupByMaterial(rows);
-
-			const currenciesList = await db
-				.select({ code: currencies.code })
-				.from(currencies);
-			if (currenciesList.length) {
-				this.allowedCurrencyCodes = new Set(
-					currenciesList
-						.map((c) => c.code?.trim().toUpperCase())
-						.filter((code): code is string => Boolean(code)),
-				);
-			}
+			this.allowedCurrencyCodes = await this.getAllowedCurrencyCodes();
+			const rowSkuMap = this.createRowSkuMap(rows);
 
 			const summary = await db.transaction(async (tx) => {
 				const brandMap = await this.resolveBrandMap(
@@ -161,7 +142,7 @@ export class ImportMaterialsService {
 
 				const existingVariantsMap = await this.loadExistingVariants(
 					tx,
-					rows.map((row) => this.buildVariantSku(row)),
+					Array.from(new Set(rowSkuMap.values())),
 				);
 
 				const now = new Date();
@@ -226,7 +207,8 @@ export class ImportMaterialsService {
 					}
 
 					for (const row of group.rows) {
-						const sku = this.buildVariantSku(row);
+						const sku =
+							rowSkuMap.get(row) ?? this.buildVariantSku(row);
 						const variantPayload = this.buildVariantPayload({
 							row,
 							productId,
@@ -387,16 +369,13 @@ export class ImportMaterialsService {
 	}
 
 	private normalizeCurrency(value?: string) {
-		const fallback = 'NGN';
+		const fallback = 'NGN'; // default nigirian currency
 		if (!value) return fallback;
 		const trimmed = value.trim();
 		if (!trimmed) return fallback;
 		const uppercased = trimmed.toUpperCase();
-		const alias = this.currencyAliasMap[uppercased];
-		const sanitized = (alias ?? uppercased).replace(/[^A-Z]/g, '');
-		if (this.allowedCurrencyCodes.has(sanitized)) {
-			return sanitized;
-		}
+		const sanitized = uppercased.replace(/[^A-Z]/g, '');
+		if (this.allowedCurrencyCodes.has(sanitized)) return sanitized;
 		return fallback;
 	}
 
@@ -531,7 +510,7 @@ export class ImportMaterialsService {
 			description: group.description,
 			brandId,
 			canonicalCategoryId,
-			flags: {
+			metadata: {
 				source: 'sap_zfin',
 				materialCode: group.materialCode,
 				baseUnit: group.baseUnit,
@@ -619,26 +598,18 @@ export class ImportMaterialsService {
 
 	private async resolveCategories(client: Transaction) {
 		const records = await client
-			.select({ id: categories.id, slug: categories.slug })
+			.select({ id: categories.id })
 			.from(categories)
-			.where(inArray(categories.slug, this.defaultCategorySlugs));
+			.orderBy(categories.createdAt ?? categories.slug)
+			.limit(3);
 
-		const slugMap = new Map(
-			records
-				.filter((record) => record.slug)
-				.map((record) => [record.slug as string, record.id]),
-		);
+		const categoryIds = records
+			.map((record) => record.id)
+			.filter((id): id is string => Boolean(id));
 
 		return {
-			canonicalCategoryId:
-				slugMap.get('noodles-pasta') ??
-				slugMap.get(
-					this.defaultCategorySlugs[
-						this.defaultCategorySlugs.length - 1
-					] ?? '',
-				) ??
-				null,
-			categoryIds: Array.from(slugMap.values()).filter(Boolean),
+			canonicalCategoryId: categoryIds[0] ?? null,
+			categoryIds,
 		} satisfies CategoryResolution;
 	}
 
@@ -676,5 +647,41 @@ export class ImportMaterialsService {
 				.filter((record) => record.sku)
 				.map((record) => [record.sku as string, record]),
 		);
+	}
+
+	private async getAllowedCurrencyCodes() {
+		const now = Date.now();
+		const cache = ImportMaterialsService.currencyCodesCache;
+		if (cache && cache.expiresAt > now) {
+			return cache.codes;
+		}
+
+		const records = await db
+			.select({ code: currencies.code })
+			.from(currencies);
+		const codes = new Set<string>(
+			records
+				.map((record) => record.code?.trim().toUpperCase())
+				.filter((code): code is string => Boolean(code)),
+		);
+
+		if (!codes.size) {
+			codes.add('NGN');
+		}
+
+		ImportMaterialsService.currencyCodesCache = {
+			codes,
+			expiresAt: now + ImportMaterialsService.currencyCacheTtlMs,
+		};
+
+		return codes;
+	}
+
+	private createRowSkuMap(rows: MaterialRecord[]) {
+		const map = new Map<MaterialRecord, string>();
+		for (const row of rows) {
+			map.set(row, this.buildVariantSku(row));
+		}
+		return map;
 	}
 }
