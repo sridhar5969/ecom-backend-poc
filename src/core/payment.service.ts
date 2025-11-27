@@ -10,7 +10,7 @@ const stripeConfigSchema = z.object({
 export const stripeConfig = stripeConfigSchema.parse({
 	STRIPE_SECRET_KEY: env.STRIPE_SECRET_KEY,
 	STRIPE_PUBLISHABLE_KEY: env.STRIPE_PUBLISHABLE_KEY,
-	STRIPE_WEBHOOK_SECRET: env.STRIPE_WEBHOOK_SECRET,
+	// STRIPE_WEBHOOK_SECRET: env.STRIPE_WEBHOOK_SECRET,
 });
 
 export interface PaymentIntent {

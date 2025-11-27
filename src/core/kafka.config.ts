@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { env } from '../env';
+import env from '../env';
 
 const kafkaConfigSchema = z.object({
 	KAFKA_BROKERS: z.string().default('localhost:9092'),

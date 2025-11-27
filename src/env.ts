@@ -69,6 +69,11 @@ const envSchema = z.object({
 
 	STRIPE_SECRET_KEY: z.string().optional(),
 	STRIPE_PUBLISHABLE_KEY: z.string().optional(),
+
+	KAFKA_BROKERS: z.string().default('localhost:9092'),
+	KAFKA_CLIENT_ID: z.string().default('ecommerce-backend'),
+	KAFKA_GROUP_ID: z.string().default('ecommerce-group'),
+	KAFKA_ENABLED: stringBoolean,
 });
 
 export function initEnv() {
