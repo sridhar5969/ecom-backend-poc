@@ -421,4 +421,165 @@ export class ProductBundlesManagementService {
 			throw new AppError('Failed to get bundle details', 500);
 		}
 	}
+
+	async getBundlesByVariant(variantIds: string[]) {
+		const isInBundle = await db
+			.select({ parentVariantId: bundleComponents.parentVariantId })
+			.from(bundleComponents)
+			.where(inArray(bundleComponents.childVariantId, variantIds));
+		if (!isInBundle.length) {
+			return [];
+		}
+
+		const parentVariantIds = isInBundle.map((b) => b.parentVariantId);
+
+		const bundleRows = await db
+			.select({
+				bundleProductId: products.id,
+				bundleProductTitle: products.title,
+				bundleProductSlug: products.slug,
+				bundleProductDescription: products.description,
+				bundleProductBrandId: products.brandId,
+				bundleVariantId: productVariants.id,
+				bundleVariantSku: productVariants.sku,
+				bundleVariantName: productVariants.name,
+				bundleVariantPriceAmount: productVariants.priceAmount,
+				bundleVariantPriceCurrency: productVariants.priceCurrency,
+				bundleVariantCompareAtAmount: productVariants.compareAtAmount,
+				childVariantId: bundleComponents.childVariantId,
+				quantity: bundleComponents.quantity,
+				primaryImageUrl: sql<string | null>`(
+					SELECT pi.url
+					FROM ${productImages} pi
+					WHERE pi.product_id = ${products.id}
+					ORDER BY pi.is_primary DESC NULLS LAST, pi.display_order ASC NULLS LAST
+					LIMIT 1
+				)`,
+			})
+			.from(bundleComponents)
+			.innerJoin(
+				productVariants,
+				eq(bundleComponents.parentVariantId, productVariants.id),
+			)
+			.innerJoin(products, eq(productVariants.productId, products.id))
+			.where(inArray(bundleComponents.parentVariantId, parentVariantIds));
+
+		const bundleMap = new Map<
+			string,
+			{
+				id: string;
+				title: string;
+				slug: string;
+				description: string | null;
+				brand_id: string | null;
+				variant_id: string;
+				variant_sku: string | null;
+				variant_name: string | null;
+				price_amount: number;
+				price_currency: string;
+				compare_at_amount: number | null;
+				primary_image_url: string | null;
+				components: {
+					variant_id: string;
+					quantity: number;
+					product_id: string;
+					product_title: string;
+					product_slug: string;
+					product_description: string | null;
+					brand_id: string | null;
+					variant_sku: string | null;
+					variant_name: string | null;
+					price_amount: number;
+					price_currency: string;
+					primary_image_url: string | null;
+				}[];
+			}
+		>();
+
+		for (const row of bundleRows) {
+			const bundleKey = row.bundleVariantId;
+			if (!bundleKey) continue;
+
+			if (!bundleMap.has(bundleKey)) {
+				bundleMap.set(bundleKey, {
+					id: row.bundleProductId ?? '',
+					title: row.bundleProductTitle ?? '',
+					slug: row.bundleProductSlug ?? '',
+					description: row.bundleProductDescription ?? null,
+					brand_id: row.bundleProductBrandId ?? null,
+					variant_id: row.bundleVariantId,
+					variant_sku: row.bundleVariantSku ?? null,
+					variant_name: row.bundleVariantName ?? null,
+					price_amount: Number(row.bundleVariantPriceAmount ?? 0),
+					price_currency: row.bundleVariantPriceCurrency ?? 'NGN',
+					compare_at_amount: row.bundleVariantCompareAtAmount ?? null,
+					primary_image_url: row.primaryImageUrl ?? null,
+					components: [],
+				});
+			}
+		}
+
+		const allChildVariantIds = bundleRows
+			.map((r) => r.childVariantId)
+			.filter((id): id is string => id !== null);
+
+		if (allChildVariantIds.length > 0) {
+			const componentDetails = await db
+				.select({
+					variantId: productVariants.id,
+					variantSku: productVariants.sku,
+					variantName: productVariants.name,
+					priceAmount: productVariants.priceAmount,
+					priceCurrency: productVariants.priceCurrency,
+					productId: products.id,
+					productTitle: products.title,
+					productSlug: products.slug,
+					productDescription: products.description,
+					brandId: products.brandId,
+					primaryImageUrl: sql<string | null>`(
+						SELECT pi.url
+						FROM ${productImages} pi
+						WHERE pi.product_id = ${products.id}
+						ORDER BY pi.is_primary DESC NULLS LAST, pi.display_order ASC NULLS LAST
+						LIMIT 1
+					)`,
+				})
+				.from(productVariants)
+				.innerJoin(products, eq(productVariants.productId, products.id))
+				.where(inArray(productVariants.id, allChildVariantIds));
+
+			const componentMap = new Map(
+				componentDetails.map((c) => [c.variantId, c]),
+			);
+
+			for (const row of bundleRows) {
+				const bundleKey = row.bundleVariantId;
+				if (!bundleKey || !row.childVariantId) continue;
+
+				const bundle = bundleMap.get(bundleKey);
+				const componentDetail = componentMap.get(row.childVariantId);
+
+				if (bundle && componentDetail) {
+					bundle.components.push({
+						variant_id: row.childVariantId,
+						quantity: row.quantity ?? 1,
+						product_id: componentDetail.productId ?? '',
+						product_title: componentDetail.productTitle ?? '',
+						product_slug: componentDetail.productSlug ?? '',
+						product_description:
+							componentDetail.productDescription ?? null,
+						brand_id: componentDetail.brandId ?? null,
+						variant_sku: componentDetail.variantSku ?? null,
+						variant_name: componentDetail.variantName ?? null,
+						price_amount: Number(componentDetail.priceAmount ?? 0),
+						price_currency: componentDetail.priceCurrency ?? 'NGN',
+						primary_image_url:
+							componentDetail.primaryImageUrl ?? null,
+					});
+				}
+			}
+		}
+
+		return Array.from(bundleMap.values());
+	}
 }
