@@ -245,7 +245,7 @@ export class ImportMaterialsService {
 
 			return summary;
 		} catch (error) {
-			logger.error(error)
+			logger.error(error);
 			return handleServiceError(
 				error,
 				'Unable to import SAP materials data',
@@ -480,8 +480,8 @@ export class ImportMaterialsService {
 	private buildVariantSku(row: MaterialRecord) {
 		const parts = [
 			row.materialCode,
-			row.plant || 'GEN',
-			row.currency,
+			// row.plant || 'GEN',
+			// row.currency,
 			row.valuationType || 'STD',
 			row.valuationClass || 'BASE',
 		];
@@ -512,17 +512,24 @@ export class ImportMaterialsService {
 			brandId,
 			canonicalCategoryId,
 			metadata: {
-				source: 'sap_zfin',
 				materialCode: group.materialCode,
 				baseUnit: group.baseUnit,
 				materialType: group.materialType,
 				abcIndicators: group.abcIndicators,
-				plants: group.plants,
 				currencies: group.currencies,
 				mrpTypes: group.mrpTypes,
 				purchasingGroups: group.purchasingGroups,
 				priceUnits: group.priceUnits,
 				lastSyncedAt: now.toISOString(),
+				// madatory fields to satisfy type
+				avg_rating: 0,
+				total_ratings: 0,
+				default_image_url: null,
+				lowest_price_amount: Math.min(
+					...group.rows.map((r) => r.priceAmountMinor),
+				),
+				currency: group.rows[0]?.currency || 'NGN',
+				lowest_compare_at_amount: null,
 			},
 			type: 'simple' as const,
 			status: 'active',
@@ -572,9 +579,9 @@ export class ImportMaterialsService {
 
 	private buildVariantName(row: MaterialRecord) {
 		const segments = [normalizeString(row.description) || row.description];
-		if (row.plant) {
-			segments.push(`Plant ${row.plant}`);
-		}
+		// if (row.plant) {
+		// segments.push(`Plant ${row.plant}`);
+		// }
 		segments.push(row.currency);
 		return segments.join(' Â· ');
 	}
