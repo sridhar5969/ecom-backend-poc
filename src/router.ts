@@ -1,10 +1,11 @@
 import { Router } from 'express';
 
+import protect from './middleware/protect';
 import authRouter from './modules/auth/controller';
 import healthRouter from './modules/health-check';
 import productsRouter from './modules/products/controller';
 import sessionRouter from './modules/session/controller';
-import protect from './middleware/protect';
+import cartRouter from './modules/cart/controller';
 
 const router = Router();
 
@@ -14,6 +15,7 @@ router.use('/health', healthRouter);
 // Post-Auth Web Routes
 // router.use(protect);
 router.use('/products', productsRouter);
+router.use('/cart', cartRouter);
 router.use('/auth', authRouter);
 // router.use(protect);
 

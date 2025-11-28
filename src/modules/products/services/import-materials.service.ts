@@ -245,7 +245,7 @@ export class ImportMaterialsService {
 
 			return summary;
 		} catch (error) {
-			logger.error(error)
+			logger.error(error);
 			return handleServiceError(
 				error,
 				'Unable to import SAP materials data',
