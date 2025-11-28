@@ -1,6 +1,7 @@
 import { type SQL, and, eq, ilike, inArray, sql } from 'drizzle-orm';
 import { db } from '@/database';
 import { productReviews } from '@/database/schema/content';
+import { inventoryLevels } from '@/database/schema/inventory';
 import {
 	brands,
 	categories,
@@ -108,20 +109,6 @@ export class ProductsService {
 			LIMIT 1
 		)`;
 
-		const averageRatingField = sql<number | null>`(
-			SELECT AVG(pr.rating)::numeric(10,2)
-			FROM ${productReviews} pr
-			WHERE pr.product_id = ${products.id}
-				AND pr.status = 'approved'
-		)`;
-
-		const reviewCountField = sql<number>`COALESCE((
-			SELECT COUNT(*)
-			FROM ${productReviews} pr
-			WHERE pr.product_id = ${products.id}
-				AND pr.status = 'approved'
-		), 0)`;
-
 		const baseProductsQuery = db
 			.select({
 				id: products.id,
@@ -130,9 +117,12 @@ export class ProductsService {
 				description: products.description,
 				status: products.status,
 				createdAt: products.createdAt,
+				metadata: products.metadata,
 				brandId: brands.id,
 				brandName: brands.name,
 				brandSlug: brands.slug,
+				brandDescription: brands.description,
+				brandLogoUrl: brands.logoUrl,
 				categoryId: categories.id,
 				categoryName: categories.name,
 				categorySlug: categories.slug,
@@ -140,8 +130,6 @@ export class ProductsService {
 				priceCurrency: priceCurrencyField,
 				compareAtAmount: compareAtAmountField,
 				primaryImageUrl: primaryImageField,
-				averageRating: averageRatingField,
-				reviewCount: reviewCountField,
 			})
 			.from(products)
 			.leftJoin(brands, eq(brands.id, products.brandId))
@@ -189,6 +177,8 @@ export class ProductsService {
 				id: row.brandId ?? '',
 				name: row.brandName ?? 'Unknown Brand',
 				slug: row.brandSlug ?? 'unknown-brand',
+				description: row.brandDescription ?? undefined,
+				logo_url: row.brandLogoUrl ?? undefined,
 			},
 			category: {
 				id: row.categoryId ?? '',
@@ -196,10 +186,11 @@ export class ProductsService {
 				slug: row.categorySlug ?? 'uncategorized',
 			},
 			average_rating:
-				row.averageRating !== null && row.averageRating !== undefined
-					? Number(row.averageRating)
-					: undefined,
-			review_count: row.reviewCount ?? 0,
+				row.metadata?.avg_rating !== null &&
+				row.metadata?.avg_rating !== undefined
+					? Number(row.metadata.avg_rating)
+					: 0,
+			review_count: row.metadata?.total_ratings ?? 0,
 			created_at: row.createdAt
 				? new Date(row.createdAt).toISOString()
 				: new Date().toISOString(),
@@ -253,20 +244,6 @@ export class ProductsService {
 			LIMIT 1
 		)`;
 
-		const averageRatingField = sql<number | null>`(
-			SELECT AVG(pr.rating)::numeric(10,2)
-			FROM ${productReviews} pr
-			WHERE pr.product_id = ${products.id}
-				AND pr.status = 'approved'
-		)`;
-
-		const reviewCountField = sql<number>`COALESCE((
-			SELECT COUNT(*)
-			FROM ${productReviews} pr
-			WHERE pr.product_id = ${products.id}
-				AND pr.status = 'approved'
-		), 0)`;
-
 		const productRow = await db
 			.select({
 				id: products.id,
@@ -290,8 +267,6 @@ export class ProductsService {
 				priceCurrency: priceCurrencyField,
 				compareAtAmount: compareAtAmountField,
 				primaryImageUrl: primaryImageField,
-				averageRating: averageRatingField,
-				reviewCount: reviewCountField,
 			})
 			.from(products)
 			.leftJoin(brands, eq(brands.id, products.brandId))
@@ -318,7 +293,7 @@ export class ProductsService {
 					compareAtAmount: productVariants.compareAtAmount,
 					costPriceAmount: productVariants.costPriceAmount,
 					weightKg: productVariants.weightKg,
-					attributes: productVariants.attributes,
+					// attributes: productVariants.attributes,
 					isActive: productVariants.isActive,
 					updatedAt: productVariants.updatedAt,
 				})
@@ -381,10 +356,6 @@ export class ProductsService {
 		}
 
 		const variants = variantRows.map((variant) => {
-			const attributes = variant.attributes as
-				| Record<string, unknown>
-				| null
-				| undefined;
 			return {
 				id: variant.id,
 				sku: variant.sku ?? '',
@@ -397,7 +368,6 @@ export class ProductsService {
 					variant.weightKg !== null && variant.weightKg !== undefined
 						? Number(variant.weightKg)
 						: undefined,
-				attributes: attributes ?? undefined,
 				is_active: variant.isActive ?? true,
 				updated_at: variant.updatedAt
 					? new Date(variant.updatedAt).toISOString()
@@ -409,6 +379,7 @@ export class ProductsService {
 						sort_order: image.sortOrder ?? undefined,
 					}),
 				),
+				available_stock: product.metadata.displayStock || 0,
 			};
 		});
 
@@ -465,14 +436,6 @@ export class ProductsService {
 				display_order: image.displayOrder ?? undefined,
 			})),
 			variants,
-			reviews: {
-				average_rating:
-					product.averageRating !== null &&
-					product.averageRating !== undefined
-						? Number(product.averageRating)
-						: undefined,
-				review_count: product.reviewCount ?? 0,
-			},
 			metadata: metadata ?? undefined,
 			flags: flags ?? undefined,
 			created_at: product.createdAt
@@ -481,6 +444,8 @@ export class ProductsService {
 			updated_at: product.updatedAt
 				? new Date(product.updatedAt).toISOString()
 				: undefined,
+			review_count: product.metadata.total_ratings || 0,
+			average_rating: product.metadata.avg_rating || 0,
 		};
 	}
 }

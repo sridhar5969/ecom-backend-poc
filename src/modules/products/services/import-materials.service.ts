@@ -124,7 +124,6 @@ export class ImportMaterialsService {
 
 			const groupedMaterials = this.groupByMaterial(rows);
 			this.allowedCurrencyCodes = await this.getAllowedCurrencyCodes();
-			const rowSkuMap = this.createRowSkuMap(rows);
 
 			const summary = await db.transaction(async (tx) => {
 				const brandMap = await this.resolveBrandMap(
@@ -142,7 +141,7 @@ export class ImportMaterialsService {
 
 				const existingVariantsMap = await this.loadExistingVariants(
 					tx,
-					Array.from(new Set(rowSkuMap.values())),
+					groupedMaterials.map((group) => group.materialCode),
 				);
 
 				const now = new Date();
@@ -206,32 +205,34 @@ export class ImportMaterialsService {
 							.onConflictDoNothing();
 					}
 
-					for (const row of group.rows) {
-						const sku =
-							rowSkuMap.get(row) ?? this.buildVariantSku(row);
-						const variantPayload = this.buildVariantPayload({
-							row,
-							productId,
-							now,
-						});
+					const representativeRow = this.selectVariantRow(group.rows);
 
-						const existingVariant = existingVariantsMap.get(sku);
+					if (!representativeRow) {
+						accumulator.skippedRows += group.rows.length;
+						continue;
+					}
 
-						if (existingVariant) {
-							await tx
-								.update(productVariants)
-								.set(variantPayload)
-								.where(
-									eq(productVariants.id, existingVariant.id),
-								);
-							accumulator.updatedVariants += 1;
-						} else {
-							await tx
-								.insert(productVariants)
-								.values({ ...variantPayload, sku })
-								.onConflictDoNothing();
-							accumulator.createdVariants += 1;
-						}
+					const sku = group.materialCode;
+					const variantPayload = this.buildVariantPayload({
+						row: representativeRow,
+						productId,
+						now,
+					});
+
+					const existingVariant = existingVariantsMap.get(sku);
+
+					if (existingVariant) {
+						await tx
+							.update(productVariants)
+							.set(variantPayload)
+							.where(eq(productVariants.id, existingVariant.id));
+						accumulator.updatedVariants += 1;
+					} else {
+						await tx
+							.insert(productVariants)
+							.values({ ...variantPayload, sku })
+							.onConflictDoNothing();
+						accumulator.createdVariants += 1;
 					}
 				}
 
@@ -341,6 +342,10 @@ export class ImportMaterialsService {
 		const description = raw['Material Description']?.trim();
 
 		if (!materialCode || !description) {
+			return null;
+		}
+
+		if (description.toUpperCase().startsWith('BLOCKED')) {
 			return null;
 		}
 
@@ -477,23 +482,6 @@ export class ImportMaterialsService {
 			.replace(/^-+|-+$/g, '');
 	}
 
-	private buildVariantSku(row: MaterialRecord) {
-		const parts = [
-			row.materialCode,
-			// row.plant || 'GEN',
-			// row.currency,
-			row.valuationType || 'STD',
-			row.valuationClass || 'BASE',
-		];
-
-		return parts
-			.map(
-				(part) =>
-					part.replace(/[^a-zA-Z0-9]/g, '').toUpperCase() || 'GEN',
-			)
-			.join('-');
-	}
-
 	private buildProductPayload({
 		group,
 		now,
@@ -584,6 +572,34 @@ export class ImportMaterialsService {
 		// }
 		segments.push(row.currency);
 		return segments.join(' Â· ');
+	}
+
+	private selectVariantRow(rows: MaterialRecord[]): MaterialRecord | null {
+		if (!rows.length) {
+			return null;
+		}
+
+		let selected = rows[0];
+		let selectedTime = this.getTimestamp(selected.lastChange);
+
+		for (let i = 1; i < rows.length; i += 1) {
+			const current = rows[i];
+			const currentTime = this.getTimestamp(current.lastChange);
+			if (currentTime > selectedTime) {
+				selected = current;
+				selectedTime = currentTime;
+			}
+		}
+
+		return selected;
+	}
+
+	private getTimestamp(value?: string) {
+		if (!value) {
+			return 0;
+		}
+		const parsed = Date.parse(value);
+		return Number.isNaN(parsed) ? 0 : parsed;
 	}
 
 	private async resolveBrandMap(client: Transaction, slugs: string[]) {
@@ -683,13 +699,5 @@ export class ImportMaterialsService {
 		};
 
 		return codes;
-	}
-
-	private createRowSkuMap(rows: MaterialRecord[]) {
-		const map = new Map<MaterialRecord, string>();
-		for (const row of rows) {
-			map.set(row, this.buildVariantSku(row));
-		}
-		return map;
 	}
 }
