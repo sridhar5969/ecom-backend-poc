@@ -1,5 +1,6 @@
 import { type SQL, and, eq, ilike, inArray, sql } from 'drizzle-orm';
 
+import { ProductBundlesManagementService } from './products-bundles-managements.service';
 import { db } from '@/database';
 import {
 	brands,
@@ -10,7 +11,6 @@ import {
 	productVariants,
 	products,
 } from '@/database/schema/products';
-import { ProductBundlesManagementService } from './products-bundles-managements.service';
 
 export type ProductQueryParams = {
 	page?: number;
@@ -447,8 +447,8 @@ export class ProductsService {
 			review_count: product.metadata.total_ratings || 0,
 			average_rating: product.metadata.avg_rating || 0,
 			bundles:
-				await new ProductBundlesManagementService().getBundlesForProduct(
-					product.id,
+				await new ProductBundlesManagementService().getBundlesByVariant(
+					variants.map((v) => v.id),
 				),
 		};
 	}
