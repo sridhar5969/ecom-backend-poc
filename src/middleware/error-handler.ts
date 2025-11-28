@@ -49,21 +49,21 @@ const addErrorHandler = (
 	});
 
 	// -------------------------------------------------------
-	// 1️⃣ Zod Validation Errors
+	// Zod Validation Errors
 	// -------------------------------------------------------
 	if (err instanceof ZodError) {
 		return new BadRequestResponse(res, z.prettifyError(err)).send();
 	}
 
 	// -------------------------------------------------------
-	// 2️⃣ PayloadValidatorError (400)
+	// PayloadValidatorError (400)
 	// -------------------------------------------------------
 	if (err instanceof PayloadValidatorError) {
 		return new BadRequestResponse(res, err.message).send();
 	}
 
 	// -------------------------------------------------------
-	// 3️⃣ AppError-based responses mapped to your ApiResponse classes
+	// AppError-based responses mapped to your ApiResponse classes
 	// -------------------------------------------------------
 	if (err instanceof AppError) {
 		switch (err.statusCode) {
@@ -83,7 +83,7 @@ const addErrorHandler = (
 	}
 
 	// -------------------------------------------------------
-	// 4️⃣ Unknown Error → Always 500
+	// Unknown Error → Always 500
 	// -------------------------------------------------------
 	return new InternalErrorResponse(res, 'Internal Server Error').send();
 };
