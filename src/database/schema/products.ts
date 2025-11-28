@@ -68,9 +68,7 @@ export const products = pgTable('products', {
 			isFeatured: false,
 			isOnSale: false,
 		})),
-	metadata: jsonb('metadata')
-		.default({})
-		.$type<ProductMetadata>(),
+	metadata: jsonb('metadata').default({}).$type<ProductMetadata>(),
 	slug: varchar('slug').unique(),
 	description: text('description'),
 	type: productTypeEnum('type').default('simple'),

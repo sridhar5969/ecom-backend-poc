@@ -1,0 +1,1 @@
+ALTER TABLE "products" ALTER COLUMN "metadata" SET DEFAULT '{}'::jsonb;

@@ -9,7 +9,7 @@ export class CartController {
 	// Helper to extract identity
 	private static getIdentity(req: Request) {
 		return {
-			userId: (req as any).user?.id,
+			userId: req.user_details?.id,
 			sessionId: req.headers['x-session-id'] as string,
 		};
 	}
@@ -70,8 +70,10 @@ export class CartController {
 
 	static async mergeCart(req: Request, res: Response) {
 		try {
-			const userId = (req as any).user?.id;
+			const userId = req.user_details?.id;
 			const sessionId = req.headers['x-session-id'] as string;
+
+			console.log(userId, sessionId);
 
 			if (!userId || !sessionId) {
 				throw new Error('Cannot merge: Missing User ID or Session ID');

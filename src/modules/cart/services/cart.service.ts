@@ -71,6 +71,7 @@ export class CartService {
 	async getCartDetails(identity: { userId?: string; sessionId?: string }) {
 		const { userId, sessionId } = identity;
 
+		console.log(userId);
 		// Try to find the cart without creating one
 		const where = userId
 			? eq(carts.userId, userId)
@@ -183,36 +184,90 @@ export class CartService {
 
 	// 6. Merge Guest Cart into User Cart (NEW)
 	async mergeCarts(userId: string, guestSessionId: string) {
+		console.log(
+			`[Merge] Starting merge for User: ${userId}, GuestSession: ${guestSessionId}`,
+		);
+
+		// 1. Find the Guest Cart
 		const guestCart = await db.query.carts.findFirst({
 			where: eq(carts.sessionId, guestSessionId),
+			with: { items: true }, // We need items to loop through them
 		});
 
+		if (!guestCart) {
+			console.log('[Merge] No guest cart found. Skipping.');
+			return { success: false, message: 'No guest cart found to merge' };
+		}
+
+		// 2. Find the User Cart
 		const userCart = await db.query.carts.findFirst({
 			where: eq(carts.userId, userId),
 		});
 
-		if (guestCart) {
-			if (userCart) {
-				// Scenario A: Both exist. Move items from Guest -> User
-				// Note: Logic to handle duplicate items (upsert) is omitted for brevity
-				// but strictly speaking, you should sum quantities if item exists in both.
+		// SCENARIO B: User has NO cart. We simply claim the guest cart.
+		// This is the fastest path.
+		if (!userCart) {
+			console.log('[Merge] User has no cart. Claiming guest cart.');
+			await db
+				.update(carts)
+				.set({
+					userId: userId,
+					sessionId: null, // Clear session so it's strictly a user cart now
+					updatedAt: new Date(),
+				})
+				.where(eq(carts.id, guestCart.id));
 
+			return { success: true, message: 'Guest cart claimed' };
+		}
+
+		// SCENARIO A: User ALREADY has a cart. We must merge items.
+		console.log(
+			`[Merge] User has cart ${userCart.id}. Merging ${guestCart.items.length} items.`,
+		);
+
+		// Transaction safety recommended here, but we'll do linear logic for clarity
+		for (const guestItem of guestCart.items) {
+			// Check if user already has this specific variant
+			const existingUserItem = await db.query.cartItems.findFirst({
+				where: and(
+					eq(cartItems.cartId, userCart.id),
+					eq(cartItems.variantId, guestItem.variantId),
+				),
+			});
+
+			if (existingUserItem) {
+				// COLLISION: Update quantity (User qty + Guest qty)
+				console.log(
+					`[Merge] Item collision for variant ${guestItem.variantId}. Adding quantities.`,
+				);
+				await db
+					.update(cartItems)
+					.set({
+						quantity:
+							existingUserItem.quantity + guestItem.quantity,
+					})
+					.where(eq(cartItems.id, existingUserItem.id));
+
+				// Delete the old guest item since we merged it
+				await db
+					.delete(cartItems)
+					.where(eq(cartItems.id, guestItem.id));
+			} else {
+				// NO COLLISION: Move item to user cart
+				console.log(
+					`[Merge] Moving variant ${guestItem.variantId} to user cart.`,
+				);
 				await db
 					.update(cartItems)
 					.set({ cartId: userCart.id })
-					.where(eq(cartItems.cartId, guestCart.id));
-
-				// Delete empty guest cart
-				await db.delete(carts).where(eq(carts.id, guestCart.id));
-			} else {
-				// Scenario B: User has no cart. Claim the guest cart.
-				await db
-					.update(carts)
-					.set({ userId: userId, sessionId: null })
-					.where(eq(carts.id, guestCart.id));
+					.where(eq(cartItems.id, guestItem.id));
 			}
 		}
 
-		return { success: true };
+		// 3. Cleanup: Delete the now-empty guest cart
+		console.log('[Merge] Deleting empty guest cart.');
+		await db.delete(carts).where(eq(carts.id, guestCart.id));
+
+		return { success: true, message: 'Carts merged successfully' };
 	}
 }

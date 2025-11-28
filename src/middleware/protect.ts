@@ -2,10 +2,9 @@ import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 // import { eq } from 'drizzle-orm';
 import AppError from '@/abstractions/AppError';
-
 import formatError from '@/abstractions/formatError';
-import { PermissionsManagementService } from '@/modules/auth/services/permissions.service';
 import { UserRole } from '@/database/schema';
+import { PermissionsManagementService } from '@/modules/auth/services/permissions.service';
 import { safeJwtVerify } from '@/utils/validations';
 
 export type UserDetailsType = {
@@ -16,7 +15,7 @@ export type UserDetailsType = {
 	permissions: string[];
 };
 
-type AccessTokenType = {
+export type AccessTokenType = {
 	userId: string;
 	name: string;
 	email: string;
