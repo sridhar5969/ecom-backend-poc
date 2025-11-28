@@ -1,10 +1,6 @@
-// Module permissions - customize based on your application needs
 export const ModuleEnum = Object.freeze({
-	// Example modules - replace with your actual module names
-	VIEW_DASHBOARD: 'viewdashboard',
-	MANAGE_USERS: 'manageusers',
-	VIEW_REPORTS: 'viewreports',
-	ADMIN_SETTINGS: 'adminsettings',
+	LEADS_MANAGEMENT: 'leads_management',
+	USERS_MANAGEMENT: 'usersmanagement',
 } as const);
 
 export type ModuleEnumType = (typeof ModuleEnum)[keyof typeof ModuleEnum];

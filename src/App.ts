@@ -3,15 +3,12 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
-import { testConnection } from './database';
-import { formatUptime } from './utils/general';
+import router from './router';
 import env from '@/env';
-import { initLogWatcher } from '@/lib/watcher';
+// import { initLogWatcher } from '@/lib/watcher';
 import addErrorHandler from '@/middleware/error-handler';
 import requestLogger from '@/middleware/requestLogger';
 import { RoleBaseAccess } from '@/middleware/roleBasesAccess';
-import webPostAuthRoutes from '@/routes/web/webPostAuthRoutes';
-import webPreAuthRoutes from '@/routes/web/webPreAuthRoutes';
 import { errorResponse } from '@/utils/responseFormatter';
 export default class App {
 	public express: express.Application;
@@ -27,12 +24,9 @@ export default class App {
 		// add all global middleware like cors
 		this.middleware();
 
-		this.preAuthRoutes();
+		this.express.use('/api', router);
 
 		RoleBaseAccess.init();
-
-		// register the all routes
-		this.protectedRoutes();
 
 		this.unhandlerRoute();
 
@@ -40,25 +34,7 @@ export default class App {
 		this.express.use(addErrorHandler);
 
 		// Blob Logger Initiate
-		this.loggerWatcher();
-	}
-
-	private preAuthRoutes(): void {
-		// General
-		this.express.get('/', this.healthRoute);
-
-		// Mobileroutes
-
-		// Web
-		this.express.use('/web', webPreAuthRoutes());
-
-		// Health Check
-		this.express.use('/health-check', this.healthRoute);
-	}
-
-	private protectedRoutes(): void {
-		// Web
-		this.express.use('/web', webPostAuthRoutes());
+		// this.loggerWatcher();
 	}
 
 	private middleware(): void {
@@ -99,29 +75,8 @@ export default class App {
 		});
 	}
 
-	private readonly healthRoute = async (
-		_req: express.Request,
-		res: express.Response,
-	) => {
-		const health = {
-			uptime: formatUptime(process.uptime()),
-			timestamp: new Date().toISOString(),
-			status: 'ok' as const,
-			checks: { db: 'ok' },
-		};
-
-		try {
-			await testConnection();
-			health.checks.db = 'ok';
-		} catch {
-			health.checks.db = 'error';
-			return res.status(503).json(health);
-		}
-
-		return res.json(health);
-	};
-
 	private async loggerWatcher() {
-		initLogWatcher();
+		// temporarily disable log watcher
+		// initLogWatcher();
 	}
 }

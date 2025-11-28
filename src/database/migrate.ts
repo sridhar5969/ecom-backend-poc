@@ -1,18 +1,22 @@
+import path from 'path';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { db, closeConnection } from './index';
-import config from '$/drizzle.config';
-import env from '@/env';
-import logger from '@/lib/logger';
+import logger from '@/utils/logger/logger';
 
-(async () => {
-	if (!env.DB_MIGRATING) {
-		throw new Error(
-			'Set "DB_MIGRATING=true" when running migrations. Contact a developer if you are unsure.',
-		);
+async function main() {
+	logger.info('Running migrations...');
+
+	try {
+		await migrate(db, {
+			migrationsFolder: path.join(__dirname, 'migrations'),
+		});
+		logger.info('Migrations completed successfully.');
+	} catch (error) {
+		logger.error('Error running migrations:', error);
+		process.exit(1);
+	} finally {
+		await closeConnection();
 	}
-	logger.info('STARTING MIGRATION');
-	await migrate(db, { migrationsFolder: config.out });
+}
 
-	await closeConnection();
-	logger.info('MIGRATION COMPLETE');
-})();
+main();

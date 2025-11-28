@@ -1,0 +1,13 @@
+[
+    {
+        "kicker": "New Arrival",
+        "heading": "Summer Collection",
+        "subHeading": "Get ready for the heat",
+        "ctaText": "Shop Now",
+        "ctaLink": "/category/summer",
+        "backgroundColour": "#f0f0f0",
+        "order": 1,
+        "startAt": "2024-01-01T00:00:00Z",
+        "endAt": "2024-06-30T23:59:59Z"
+    }
+]

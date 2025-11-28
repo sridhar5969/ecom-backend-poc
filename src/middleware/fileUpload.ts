@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import multer, { FileFilterCallback, MulterError } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
-import { errorResponse } from '@/utils/responseFormatter';
 
 export interface MulterFile {
 	fieldname: string;
@@ -30,6 +29,8 @@ export const allowedTypes = [
 	// Excel
 	'application/vnd.ms-excel',
 	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+	'text/csv',
+	'application/csv',
 	// PowerPoint
 	'application/vnd.ms-powerpoint',
 	'application/vnd.openxmlformats-officedocument.presentationml.presentation',
@@ -59,13 +60,11 @@ export const memoryUploadMiddleware = (
 ): void => {
 	upload.any()(req, res, (err?: unknown) => {
 		if (err instanceof MulterError) {
-			const errorResp = errorResponse(err.message, undefined, 400);
-			return res.status(400).json(errorResp);
+			return res.status(400).json({ message: err.message });
 		}
 
 		if (err instanceof Error) {
-			const errorResp = errorResponse(err.message, undefined, 400);
-			return res.status(400).json(errorResp);
+			return res.status(400).json({ message: err.message });
 		}
 
 		if (Array.isArray(req.files)) {

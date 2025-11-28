@@ -1,0 +1,32 @@
+[
+    {
+        "id": "store-main-001",
+        "name": "Main Warehouse",
+        "addressLine1": "123 Commerce Street",
+        "addressLine2": "Building A",
+        "city": "Lagos",
+        "state": "Lagos",
+        "postalCode": "100001",
+        "country": "Nigeria",
+        "latitude": "6.5244",
+        "longitude": "3.3792",
+        "startsAt": "2024-01-01T00:00:00Z",
+        "endsAt": "2024-06-30T23:59:59Z",
+        "isActive": true
+    },
+    {
+        "id": "store-branch-001",
+        "name": "Victoria Island Store",
+        "addressLine1": "456 Akin Adesola Street",
+        "addressLine2": null,
+        "city": "Lagos",
+        "state": "Lagos",
+        "postalCode": "101241",
+        "country": "Nigeria",
+        "latitude": "6.4281",
+        "longitude": "3.4219",
+        "startsAt": "2024-01-01T00:00:00Z",
+        "endsAt": "2024-06-30T23:59:59Z",
+        "isActive": true
+    }
+]

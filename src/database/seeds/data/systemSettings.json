@@ -1,0 +1,5 @@
+[
+    { "key": "site_name", "value": "Tolaram E-Commerce", "type": "string", "description": "Name of the website", "isPublic": true },
+    { "key": "support_email", "value": "support@tolaram.com", "type": "string", "description": "Support email address", "isPublic": true },
+    { "key": "maintenance_mode", "value": "false", "type": "boolean", "description": "Enable maintenance mode", "isPublic": false }
+]

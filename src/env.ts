@@ -1,7 +1,7 @@
 import path from 'path';
 import { config } from 'dotenv';
 import { z } from 'zod/v4';
-import { EnvErrorLoggger } from './utils/chalk';
+import { EnvErrorLoggger } from './utils/logger/chalk';
 
 const envMap = {
 	prod: '.env.prod',
@@ -61,14 +61,7 @@ const envSchema = z.object({
 	DB_MIGRATING: stringBoolean,
 	DB_SEEDING: stringBoolean,
 
-	// WHATSAPP_WEBHOOK_VERIFY_TOKEN: z.string(),
-	// WHATSAPP_ACCESS_TOKEN: z.string(),
-	// WHATSAPP_PHONE_NUMBER_ID: z.string(),
-	// WHATSAPP_API_VERSION: z.string().optional(),
 	TZ: z.string().default('UTC'),
-
-	STRIPE_SECRET_KEY: z.string().optional(),
-	STRIPE_PUBLISHABLE_KEY: z.string().optional(),
 });
 
 export function initEnv() {

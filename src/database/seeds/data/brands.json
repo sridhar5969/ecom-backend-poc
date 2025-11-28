@@ -1,0 +1,110 @@
+[
+    {
+        "id": "b1a2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+        "name": "Samsung",
+        "description": "Leading electronics and technology brand",
+        "slug": "samsung",
+        "logoUrl": "/brands/samsung.png",
+        "isActive": true,
+        "attributes": {
+            "country": "South Korea",
+            "founded": 1938
+        }
+    },
+    {
+        "id": "c2b3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+        "name": "Apple",
+        "description": "Premium technology and consumer electronics",
+        "slug": "apple",
+        "logoUrl": "/brands/apple.png",
+        "isActive": true,
+        "attributes": {
+            "country": "USA",
+            "founded": 1976
+        }
+    },
+    {
+        "id": "d3c4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f",
+        "name": "Nike",
+        "description": "Athletic footwear and apparel",
+        "slug": "nike",
+        "logoUrl": "/brands/nike.png",
+        "isActive": true,
+        "attributes": {
+            "country": "USA",
+            "founded": 1964
+        }
+    },
+    {
+        "id": "e4d5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a",
+        "name": "Adidas",
+        "description": "Sports apparel and equipment",
+        "slug": "adidas",
+        "logoUrl": "/brands/adidas.png",
+        "isActive": true,
+        "attributes": {
+            "country": "Germany",
+            "founded": 1949
+        }
+    },
+    {
+        "id": "brand-indomie-001",
+        "name": "Indomie",
+        "description": "The leading instant noodles brand in Nigeria",
+        "slug": "indomie",
+        "logoUrl": "/brands/indomie.png",
+        "isActive": true,
+        "attributes": {
+            "country": "Indonesia/Nigeria",
+            "founded": 1972
+        }
+    },
+    {
+        "id": "brand-minimie-001",
+        "name": "Minimie",
+        "description": "Tasty and crunchy snacks",
+        "slug": "minimie",
+        "logoUrl": "/brands/minimie.png",
+        "isActive": true,
+        "attributes": {
+            "country": "Nigeria",
+            "founded": 2015
+        }
+    },
+    {
+        "id": "brand-poweroil-001",
+        "name": "Power Oil",
+        "description": "Healthy cooking oil for the family",
+        "slug": "power-oil",
+        "logoUrl": "/brands/power-oil.png",
+        "isActive": true,
+        "attributes": {
+            "country": "Nigeria",
+            "founded": 2012
+        }
+    },
+    {
+        "id": "brand-kelloggs-001",
+        "name": "Kellogg's",
+        "description": "World's leading cereal company",
+        "slug": "kelloggs",
+        "logoUrl": "/brands/kelloggs.png",
+        "isActive": true,
+        "attributes": {
+            "country": "USA",
+            "founded": 1906
+        }
+    },
+    {
+        "id": "brand-dano-001",
+        "name": "Dano",
+        "description": "Nutritious milk products",
+        "slug": "dano",
+        "logoUrl": "/brands/dano.png",
+        "isActive": true,
+        "attributes": {
+            "country": "Denmark/Nigeria",
+            "founded": 1881
+        }
+    }
+]

@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import AppError from '@/abstractions/AppError';
-import logger from '@/lib/logger';
+import logger from '@/utils/logger/logger';
 
 /**
  * Service Error Handler Utility

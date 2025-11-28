@@ -25,7 +25,11 @@ export function parseRequest<T extends Schemas>(schemas: T = {} as T) {
 
 	return function handlerFunctionWithZod(handler: HandlerFunc) {
 		return async function (
-			req: Request,
+			req: Request & {
+				zodBody: BodyType;
+				zodQuery: QueryType;
+				zodParams: ParamsType;
+			},
 			res: Response,
 			next: NextFunction,
 		) {
@@ -38,10 +42,11 @@ export function parseRequest<T extends Schemas>(schemas: T = {} as T) {
 					req.zodParams = schemas.params.parse(
 						req.params,
 					) as ParamsType;
+
+				await handler(req as any, res, next);
 			} catch (err) {
 				return formatError(next, err);
 			}
-			await handler(req as any, res, next);
 		};
 	};
 }

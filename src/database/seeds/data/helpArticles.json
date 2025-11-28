@@ -1,0 +1,16 @@
+[
+    {
+        "category": "Orders",
+        "question": "How do I track my order?",
+        "answer": "You can track your order by logging into your account and visiting the order history page.",
+        "displayOrder": 1,
+        "isPublished": true
+    },
+    {
+        "category": "Returns",
+        "question": "What is your return policy?",
+        "answer": "We accept returns within 30 days of purchase. Items must be unused and in original packaging.",
+        "displayOrder": 2,
+        "isPublished": true
+    }
+]

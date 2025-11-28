@@ -1,0 +1,14 @@
+[
+    {
+        "code": "WELCOME10",
+        "name": "Welcome Discount",
+        "description": "10% off for new customers",
+        "stackable": false,
+        "minOrderAmount": 5000,
+        "maxUses": 1000,
+        "maxUsesPerUser": 1,
+        "startsAt": "2024-01-01T00:00:00Z",
+        "endsAt": "2024-06-30T23:59:59Z",
+        "isActive": true
+    }
+]

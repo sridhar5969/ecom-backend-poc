@@ -1,0 +1,11 @@
+[
+    { "role": "admin", "permissionName": "view_dashboard" },
+    { "role": "admin", "permissionName": "manage_users" },
+    { "role": "admin", "permissionName": "manage_products" },
+    { "role": "admin", "permissionName": "manage_orders" },
+    { "role": "admin", "permissionName": "manage_content" },
+    { "role": "admin", "permissionName": "view_reports" },
+    { "role": "manager", "permissionName": "view_dashboard" },
+    { "role": "manager", "permissionName": "manage_products" },
+    { "role": "manager", "permissionName": "manage_orders" }
+]

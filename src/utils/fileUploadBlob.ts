@@ -1,18 +1,18 @@
 import { promises as fs } from 'node:fs';
 import * as path from 'node:path';
 import {
+	BlobSASPermissions,
 	BlobServiceClient,
 	StorageSharedKeyCredential,
 	generateBlobSASQueryParameters,
-	BlobSASPermissions,
-	type BlockBlobClient,
 	type BlobDownloadResponseParsed,
 	type BlobUploadCommonResponse,
+	type BlockBlobClient,
 } from '@azure/storage-blob';
 import mime from 'mime-types';
 import env from '@/env';
-import logger from '@/lib/logger';
 import { type MulterFile } from '@/middleware/fileUpload';
+import logger from '@/utils/logger/logger';
 
 class FileHandlerService {
 	private readonly authConnection = env.AZURE_STORAGE_CONNECTION_STRING;
