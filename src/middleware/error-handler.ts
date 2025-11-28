@@ -1,5 +1,8 @@
 import * as express from 'express';
+import { z, ZodError } from 'zod/v4';
+
 import { AppGlobalError } from '@/abstractions/formatError';
+import { BadRequestResponse } from '@/utils/apiResponse';
 import logger from '@/utils/logger/logger';
 
 function tryParseJson(str: string) {
@@ -20,8 +23,8 @@ const addErrorHandler = (
 	const parsedStackError = tryParseJson(err.stackErr); // For Zod errors
 
 	const statusCode = err.statusCode || 500;
-	const clientMessage =
-		statusCode >= 500 ? 'Something went wrong' : err.message;
+	const clientMessage = err.message;
+	// statusCode >= 500 ? 'Something went wrong' : err.message;
 
 	logger.error('API error', {
 		message: err.message || 'Internal Server Error',
@@ -37,11 +40,21 @@ const addErrorHandler = (
 		stack: err.stack,
 		actualStack: err.stackErr,
 	});
+	if (err instanceof ZodError)
+		return new BadRequestResponse(res, z.prettifyError(err)).send();
 
-	res.status(statusCode).json({
+	const success = statusCode >= 200 && statusCode < 300;
+	const payload: Record<string, unknown> = {
+		success,
+		timestamp: new Date().toISOString(),
 		message: clientMessage,
-		...(parsedStackError && { errors: parsedStackError.fieldErrors }),
-	});
+	};
+
+	if (parsedStackError?.fieldErrors) {
+		payload.errors = parsedStackError.fieldErrors;
+	}
+
+	res.status(statusCode).json(payload);
 };
 
 export default addErrorHandler;

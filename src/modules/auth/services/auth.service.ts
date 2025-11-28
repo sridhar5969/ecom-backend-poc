@@ -1,4 +1,4 @@
-import { eq, and, lt } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { StatusCodes } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
 
@@ -9,7 +9,7 @@ import {
 } from '../utils/auth.utils';
 import AppError from '@/abstractions/AppError';
 import { db } from '@/database';
-import { users, userSessions, otpCodes, User } from '@/database/schema';
+import { User, users, userSessions } from '@/database/schema';
 import env from '@/env';
 
 export class AuthWebService {

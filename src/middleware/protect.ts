@@ -4,8 +4,8 @@ import { StatusCodes } from 'http-status-codes';
 import AppError from '@/abstractions/AppError';
 
 import formatError from '@/abstractions/formatError';
-import { PermissionsManagementService } from '@/modules/auth/services/permissions.service';
 import { UserRole } from '@/database/schema';
+import { PermissionsManagementService } from '@/modules/auth/services/permissions.service';
 import { safeJwtVerify } from '@/utils/validations';
 
 export type UserDetailsType = {

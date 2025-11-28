@@ -1,7 +1,6 @@
 import { type SQL, and, eq, ilike, inArray, sql } from 'drizzle-orm';
+
 import { db } from '@/database';
-import { productReviews } from '@/database/schema/content';
-import { inventoryLevels } from '@/database/schema/inventory';
 import {
 	brands,
 	categories,
@@ -11,6 +10,7 @@ import {
 	productVariants,
 	products,
 } from '@/database/schema/products';
+import { ProductBundlesManagementService } from './products-bundles-managements.service';
 
 export type ProductQueryParams = {
 	page?: number;
@@ -446,6 +446,10 @@ export class ProductsService {
 				: undefined,
 			review_count: product.metadata.total_ratings || 0,
 			average_rating: product.metadata.avg_rating || 0,
+			bundles:
+				await new ProductBundlesManagementService().getBundlesForProduct(
+					product.id,
+				),
 		};
 	}
 }

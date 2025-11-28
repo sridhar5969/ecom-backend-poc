@@ -9,3 +9,10 @@ class AppError extends Error {
 }
 
 export default AppError;
+
+// validator error
+export class PayloadValidatorError extends AppError {
+	constructor(message: string) {
+		super(message, 400);
+	}
+}

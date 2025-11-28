@@ -1,0 +1,800 @@
+Project Commerce_SaaS_VariantFirst_Promos {
+  database_type: 'PostgreSQL'
+  Note: 'Variant-first SaaS schema with promo rule engine (BOGO, tiers), multi-currency, geo-tax, stores & pickup'
+}
+ 
+/////////////////////////////////////////////////////
+// ENUMS
+/////////////////////////////////////////////////////
+ 
+Enum product_type {
+  simple
+  bundle
+}
+ 
+Enum order_status {
+  pending
+  paid
+  processing
+  ready_for_pickup
+  shipped
+  delivered
+  cancelled
+  refunded
+}
+ 
+Enum fulfillment_type {
+  delivery
+  pickup
+}
+ 
+Enum discount_type {
+  percentage
+  fixed_amount
+}
+ 
+Enum user_role {
+  admin
+  manager
+  customer
+}
+ 
+Enum auth_method {
+  email_password
+  phone_otp
+}
+ 
+Enum loyalty_adjustment_type {
+  earn_purchase
+  redeem_discount
+  admin_add
+  admin_remove
+  expire
+  refund_reversal
+}
+ 
+/////////////////////////////////////////////////////
+// USERS & AUTH
+/////////////////////////////////////////////////////
+ 
+Table users {
+  id uuid [pk, default: `gen_random_uuid()`]
+  email varchar [unique, note: 'Nullable, but at least one of email/phone must be present.']
+  phone_number varchar [unique, note: 'Nullable, but at least one of email/phone must be present.']
+  password_hash text [note: 'Null if user uses OTP or OAuth.']
+  full_name varchar
+  role user_role [default: 'customer']
+  is_active boolean [default: true]
+  primary_auth_method auth_method [note: 'Preferred authentication method for this user.']
+  email_verified_at timestamp
+  phone_verified_at timestamp
+  created_at timestamp [default: `now()`]
+  updated_at timestamp
+ 
+ 
+  Note: 'CHECK (email IS NOT NULL OR phone_number IS NOT NULL)'
+}
+ 
+Table user_sessions {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > users.id]
+  session_token text [unique]
+  expires_at timestamp
+  ip_address varchar
+  user_agent text
+  created_at timestamp [default: `now()`]
+}
+ 
+Table otp_codes {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > users.id, note: 'Null for unregistered users']
+  phone_number varchar [note: 'Target phone number for OTP']
+  email varchar [note: 'Target email for OTP']
+  code varchar
+  type varchar
+  expires_at timestamp
+  is_used boolean [default: false]
+  created_at timestamp [default: `now()`]
+ 
+  indexes {
+    (phone_number, type, is_used)
+    (email, type, is_used)
+  }
+}
+ 
+Table user_addresses {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > users.id]
+  full_name varchar
+  phone varchar
+  address_line1 varchar
+  address_line2 varchar
+  city varchar
+  state varchar
+  postal_code varchar
+  country varchar
+  is_default boolean [default: false]
+}
+ 
+/////////////////////////////////////////////////////
+// AUTHORIZATION (RBAC)
+/////////////////////////////////////////////////////
+ 
+Table permissions {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar [unique]
+  description text
+}
+ 
+Table role_permissions {
+  role user_role
+  permission_id uuid [ref: > permissions.id]
+ 
+  indexes {
+    (role, permission_id) [pk]
+  }
+}
+ 
+/////////////////////////////////////////////////////
+// CURRENCIES
+/////////////////////////////////////////////////////
+ 
+Table currencies {
+  code varchar [pk]
+  symbol varchar
+  name varchar
+  decimals int [default: 2]
+  rate_to_base numeric(18,8)
+  updated_at timestamp
+}
+ 
+/////////////////////////////////////////////////////
+// CATALOG
+/////////////////////////////////////////////////////
+ 
+Table brands {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar
+  description text
+  attributes jsonb // primary_colour, bg colour
+  slug varchar [unique]
+  logo_url text
+  is_active boolean [default: true]
+  created_at timestamp
+}
+ 
+Table categories {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar
+  slug varchar [unique]
+  parent_id uuid [ref: > categories.id]
+  created_at timestamp
+}
+ 
+Table products {
+  id uuid [pk, default: `gen_random_uuid()`]
+  brand_id uuid [ref: > brands.id]
+  metadata jsonb // to store read data for products list - avg ratings , totla ratings , price of lower variant , default images link , currency , compare_at_amount (slight complexity to Write) 
+  canonical_category_id uuid [ref: > categories.id]
+  title varchar
+  flags jsonb // [best seller,  new , trending , featured ]
+  slug varchar [unique]
+  description text // pro desc
+  type product_type [default: 'simple']
+  status varchar [default: 'draft']
+  created_at timestamp
+  updated_at timestamp
+}
+ 
+Table product_categories {
+  product_id uuid [ref: > products.id]
+  category_id uuid [ref: > categories.id]
+ 
+  indexes {
+    (product_id, category_id) [pk]
+  }
+}
+ 
+Table product_images {
+  id uuid [pk, default: `gen_random_uuid()`]
+  product_id uuid [ref: > products.id]
+  url text
+  alt_text varchar
+  is_primary boolean [default: false]
+  display_order int
+}
+ 
+/////////////////////////////////////////////////////
+// VARIANTS
+/////////////////////////////////////////////////////
+ 
+Table product_variants {
+  id uuid [pk, default: `gen_random_uuid()`]
+  product_id uuid [ref: > products.id]
+  sku varchar [unique]
+  name varchar
+  price_amount bigint // display or selling amount
+  price_currency varchar [ref: > currencies.code]
+  compare_at_amount bigint // crossed amount
+  cost_price_amount bigint // original price (not selling amount)
+  weight_kg numeric(10,3)
+  attributes jsonb // loyalty points for this variant
+  is_active boolean [default: true]
+  updated_at timestamp
+}
+ 
+Table product_variant_images {
+  id uuid [pk, default: `gen_random_uuid()`]
+  variant_id uuid [ref: > product_variants.id]
+  url text
+  sort_order int
+}
+ 
+/////////////////////////////////////////////////////
+// BUNDLES
+/////////////////////////////////////////////////////
+ 
+Table bundle_components {
+  parent_variant_id uuid [ref: > product_variants.id]
+  child_variant_id uuid [ref: > product_variants.id]
+  quantity int [default: 1]
+ 
+  indexes {
+    (parent_variant_id, child_variant_id) [pk]
+  }
+}
+ 
+/////////////////////////////////////////////////////
+// STORES & INVENTORY
+/////////////////////////////////////////////////////
+ 
+Table stores {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar
+  address_line1 varchar
+  address_line2 varchar
+  city varchar
+  state varchar
+  postal_code varchar
+  country varchar
+  latitude numeric(10,8)
+  longitude numeric(11,8)
+  is_active boolean [default: true]
+  created_at timestamp
+}
+ 
+Table inventory_levels {
+  variant_id uuid [ref: > product_variants.id]
+  store_id uuid [ref: > stores.id, note: 'NULL = Global warehouse']
+  stock int [default: 0]
+  reserved_stock int [default: 0]
+  last_adjusted_at timestamp
+ 
+  indexes {
+    (variant_id, store_id) [pk]
+  }
+}
+ 
+Table stock_reservations {
+  id uuid [pk, default: `gen_random_uuid()`]
+  variant_id uuid [ref: > product_variants.id]
+  cart_id uuid [ref: > carts.id]
+  quantity int
+  reserved_at timestamp [default: `now()`]
+  expires_at timestamp
+  created_by_session varchar
+}
+ 
+/////////////////////////////////////////////////////
+// TAX
+/////////////////////////////////////////////////////
+ 
+Table tax_rules {
+  id uuid [pk, default: `gen_random_uuid()`]
+  country_code varchar
+  state_code varchar
+  name varchar
+  rate numeric(6,4)
+  priority int [default: 10]
+  start_at timestamp
+  end_at timestamp
+}
+ 
+/////////////////////////////////////////////////////
+// VOLUME DISCOUNTS
+/////////////////////////////////////////////////////
+ 
+Table volume_discounts {
+  id uuid [pk, default: `gen_random_uuid()`]
+  variant_id uuid [ref: > product_variants.id]
+  min_quantity int
+  discount_type discount_type
+  discount_value int
+  message varchar
+  starts_at timestamp
+  ends_at timestamp
+}
+ 
+/////////////////////////////////////////////////////
+// PROMO ENGINE
+/////////////////////////////////////////////////////
+ 
+Table promo_codes {
+  id uuid [pk, default: `gen_random_uuid()`]
+  code varchar [unique]
+  name varchar
+  description text
+  stackable boolean [default: false]
+  min_order_amount int
+  max_uses int
+  max_uses_per_user int
+  starts_at timestamp
+  ends_at timestamp
+  is_active boolean [default: true]
+  created_at timestamp [default: `now()`]
+}
+ 
+Table promo_code_redemptions {
+  id uuid [pk, default: `gen_random_uuid()`]
+  promo_id uuid [ref: > promo_codes.id]
+  user_id uuid [ref: > users.id]
+  order_id uuid [ref: > orders.id]
+  amount_applied int
+  redeemed_at timestamp [default: `now()`]
+}
+ 
+Table promo_rules {
+  id uuid [pk, default: `gen_random_uuid()`]
+  promo_code_id uuid [ref: > promo_codes.id]
+  name varchar
+  description text
+ 
+  trigger_type varchar
+  trigger_variant_id uuid [ref: > product_variants.id]
+  trigger_category_id uuid [ref: > categories.id]
+  trigger_brand_id uuid [ref: > brands.id]
+  trigger_quantity int
+  trigger_amount int
+ 
+  benefit_type varchar
+  benefit_variant_id uuid [ref: > product_variants.id]
+  benefit_category_id uuid [ref: > categories.id]
+  benefit_brand_id uuid [ref: > brands.id]
+  benefit_value int
+  benefit_quantity int
+ 
+  applies_once_per_order boolean [default: false]
+  applies_per_unit boolean [default: false]
+ 
+  starts_at timestamp
+  ends_at timestamp
+  is_active boolean [default: true]
+  created_at timestamp [default: `now()`]
+}
+ 
+Table promo_rule_items {
+  id uuid [pk, default: `gen_random_uuid()`]
+  rule_id uuid [ref: > promo_rules.id]
+  variant_id uuid [ref: > product_variants.id]
+  category_id uuid [ref: > categories.id]
+  brand_id uuid [ref: > brands.id]
+  item_role varchar
+}
+ 
+/////////////////////////////////////////////////////
+// CARTS
+/////////////////////////////////////////////////////
+ 
+Table carts {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > users.id]
+  session_id varchar
+  currency varchar [ref: > currencies.code]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp
+}
+ 
+Table cart_items {
+  id uuid [pk, default: `gen_random_uuid()`]
+  cart_id uuid [ref: > carts.id]
+  variant_id uuid [ref: > product_variants.id]
+  quantity int
+  price_snapshot_amount bigint
+  price_snapshot_currency varchar
+  added_at timestamp [default: `now()`]
+}
+ 
+/////////////////////////////////////////////////////
+// ORDERS
+/////////////////////////////////////////////////////
+ 
+Table orders {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > users.id]
+  currency varchar [ref: > currencies.code]
+  subtotal int
+  tax_total int
+  discount_total int
+  shipping_total int
+  grand_total int
+  status order_status [default: 'pending']
+  payment_status varchar
+  payment_intent_id varchar
+  fulfillment_type fulfillment_type
+  store_id uuid [ref: > stores.id]
+  shipping_address jsonb
+  billing_address jsonb
+  metadata jsonb
+  created_at timestamp [default: `now()`]
+  updated_at timestamp
+}
+ 
+Table order_items {
+  id uuid [pk, default: `gen_random_uuid()`]
+  order_id uuid [ref: > orders.id]
+  variant_id uuid [ref: > product_variants.id]
+  product_name varchar
+  sku varchar
+  unit_price_amount bigint
+  currency varchar [ref: > currencies.code]
+  quantity int
+  total_price_amount bigint
+  weight_kg numeric(10,3)
+  metadata jsonb
+}
+ 
+Enum transaction_type {
+  authorization  // Hold funds (Pre-auth)
+  capture        // Take funds (Post-shipping)
+  sale           // Immediate Auth+Capture (Standard Ecommerce)
+  refund         // Return money
+  void           // Cancel authorization
+  dispute        // Chargeback initiation
+}
+ 
+Enum transaction_status {
+  pending
+  success
+  failed
+  error
+  cancelled
+}
+ 
+Table order_transactions {
+  id uuid [pk, default: `gen_random_uuid()`]
+  order_id uuid [ref: > orders.id]
+ 
+  // The Financials
+  type transaction_type
+  status transaction_status
+  amount bigint [note: 'Always positive integer (cents). Logic depends on type.']
+  currency varchar [ref: > currencies.code]
+ 
+  // The Gateway Link
+  provider varchar [default: 'stripe', note: 'stripe, paypal, razorpay']
+  provider_transaction_id varchar [note: 'The ID from the gateway (pi_123, ch_123)']
+ 
+  // Audit Trail
+  parent_transaction_id uuid [ref: > order_transactions.id, note: 'For refunds/captures, points to original auth/sale']
+  payment_method_details jsonb [note: '{"brand": "visa", "last4": "4242"}']
+  gateway_response jsonb [note: 'Full raw JSON from provider for debugging']
+  error_message text
+ 
+  created_at timestamp [default: `now()`]
+  updated_at timestamp
+ 
+  indexes {
+    (order_id)
+    (provider_transaction_id)
+  }
+}
+ 
+/////////////////////////////////////////////////////
+// LOYALTY
+/////////////////////////////////////////////////////
+ 
+Table loyalty_balances {
+  user_id uuid [pk, ref: > users.id]
+  points int [default: 0]
+  last_updated_at timestamp [default: `now()`]
+}
+ 
+Table loyalty_transactions {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > users.id]
+  order_id uuid [ref: > orders.id]
+  promo_id uuid [ref: > promo_codes.id]
+  type loyalty_adjustment_type
+  points_amount int
+  description text
+  created_at timestamp [default: `now()`]
+}
+ 
+Table loyalty_redemption_rules {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar
+  points_required int
+  discount_amount bigint
+  currency varchar [ref: > currencies.code]
+  is_active boolean [default: true]
+  start_at timestamp
+  end_at timestamp
+}
+ 
+/////////////////////////////////////////////////////
+// SEARCH INDEX QUEUE
+/////////////////////////////////////////////////////
+ 
+Table search_index_queue {
+  id uuid [pk, default: `gen_random_uuid()`]
+  entity_type varchar
+  entity_id uuid
+  operation varchar
+  payload jsonb
+  processed boolean [default: false]
+  processed_at timestamp
+  created_at timestamp [default: `now()`]
+}
+Table banner {
+    id uuid [pk, default: `gen_random_uuid()`]
+    kicker varchar
+    heading varchar
+    sub_heading varchar
+    cta_text varchar
+    cta_link varchar
+    background_colour varchar
+    background_image varchar
+    sort_order   varchar
+    start_at timestamp
+    end_at timestamp
+ 
+ 
+}
+Enum review_status {
+  pending
+  approved
+  rejected
+  flagged
+}
+ 
+Table product_reviews {
+  id uuid [pk, default: `gen_random_uuid()`]
+  product_id uuid [ref: > products.id]
+  user_id uuid [ref: > users.id]
+  variant_id uuid [ref: > product_variants.id, note: 'Optional: Context for what specific item was bought']
+ 
+  rating int [note: 'CHECK (rating >= 1 AND rating <= 5)']
+  title varchar
+  content text
+ 
+  is_verified_purchase boolean [default: false]
+  status review_status [default: 'pending']
+ 
+  helpful_votes int [default: 0]
+  unhelpful_votes int [default: 0]
+ 
+  created_at timestamp [default: `now()`]
+  updated_at timestamp
+ 
+  indexes {
+    (product_id, status) // Fast lookup for public page
+    (user_id) // My Reviews page
+  }
+}
+ 
+Table review_images {
+  id uuid [pk, default: `gen_random_uuid()`]
+  review_id uuid [ref: > product_reviews.id]
+  url text
+  is_approved boolean [default: false]
+  created_at timestamp [default: `now()`]
+}
+ 
+Table wishlists {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > users.id]
+  name varchar [default: 'My Wishlist']
+  is_public boolean [default: false, note: 'Allow sharing via link']
+  share_token varchar [unique]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp
+}
+ 
+Table wishlist_items {
+  id uuid [pk, default: `gen_random_uuid()`]
+  wishlist_id uuid [ref: > wishlists.id]
+  product_id uuid [ref: > products.id]
+  variant_id uuid [ref: > product_variants.id, note: 'User usually wishes for a specific size/color']
+ 
+  added_at timestamp [default: `now()`]
+  priority int [default: 0, note: '0=Normal, 1=High, 2=Must Have']
+ 
+  indexes {
+    (wishlist_id, variant_id) [unique] // Prevent duplicates
+  }
+}
+ 
+Table master_geo_countries {
+  id int [pk, increment] // standard ISO numeric or simple ID
+  iso_code_2 varchar(2) [unique, note: 'US, IN, GB']
+  iso_code_3 varchar(3) [unique, note: 'USA, IND, GBR']
+  name varchar
+  currency_code varchar [ref: > currencies.code]
+  phone_code varchar
+  region varchar [note: 'NA, EMEA, APAC']
+  is_active boolean [default: true]
+}
+ 
+Table master_geo_states {
+  id int [pk, increment]
+  country_id int [ref: > master_geo_countries.id]
+  name varchar
+  code varchar [note: 'CA, NY, TN']
+  type varchar [note: 'State, Province, Territory']
+ 
+  indexes {
+    (country_id, code)
+  }
+}
+ 
+// Note: Storing a master table of ALL cities is usually overkill (millions of rows).
+// Usually better to leave city as varchar in address and validate against shipping API.
+// However, if you have specific service areas, use this:
+Table master_geo_cities {
+  id uuid [pk, default: `gen_random_uuid()`]
+  state_id int [ref: > master_geo_states.id]
+  name varchar
+  postal_code_pattern varchar [note: 'Regex for validation']
+  is_serviceable boolean [default: true]
+}
+ 
+// Standardized reasons for returning items (Linked to RMA logic)
+Table master_return_reasons {
+  id int [pk, increment]
+  code varchar [unique, note: 'SIZE_TOO_SMALL, DAMAGED_SHIPPING']
+  label varchar
+  requires_photo boolean [default: false]
+  is_active boolean [default: true]
+}
+ 
+// FAQ / Help Center Content
+Table master_help_articles {
+  id uuid [pk, default: `gen_random_uuid()`]
+  category varchar [note: 'Shipping, Returns, Payments']
+  question text
+  answer text //html
+  display_order int
+  is_published boolean [default: true]
+}
+ 
+// Dynamic System Settings (Avoid hardcoding constants)
+Table master_system_settings {
+  key varchar [pk, note: 'site_name, support_email, free_shipping_threshold']
+  value text
+  type varchar [default: 'string', note: 'string, boolean, integer, json']
+  description text
+  is_public boolean [default: false, note: 'Expose to frontend via API?']
+}
+ 
+Table marketing_attributions {
+  id uuid [pk, default: `gen_random_uuid()`]
+  order_id uuid [ref: > orders.id, unique, note: '1:1 link to the conversion']
+  user_id uuid [ref: > users.id]
+ 
+  // The Standard UTM Parameters
+  utm_source varchar [note: 'google, newsletter, facebook']
+  utm_medium varchar [note: 'cpc, banner, email']
+  utm_campaign varchar [note: 'summer_sale, black_friday']
+  utm_term varchar [note: 'search keywords']
+  utm_content varchar [note: 'variation_a, hero_image_click']
+ 
+  // The Context
+  referrer_url text [note: 'Where they came from (document.referrer)']
+  landing_page_url text [note: 'The first page they hit']
+ 
+  // Device / Tech
+  user_agent text
+  ip_address varchar
+  device_type varchar [note: 'mobile, desktop, tablet']
+ 
+  created_at timestamp [default: `now()`]
+}
+TableGroup Users_Auth {
+  users
+  user_sessions
+  otp_codes
+  user_addresses
+}
+
+TableGroup Authorization_RBAC {
+  permissions
+  role_permissions
+}
+
+TableGroup Currency {
+  currencies
+}
+
+TableGroup Catalog {
+  brands
+  categories
+  products
+  product_categories
+  product_images
+}
+
+TableGroup Variants {
+  product_variants
+  product_variant_images
+}
+
+TableGroup Bundles {
+  bundle_components
+}
+
+TableGroup Stores_Inventory {
+  stores
+  inventory_levels
+  stock_reservations
+}
+
+TableGroup Tax {
+  tax_rules
+}
+
+TableGroup Volume_Discounts {
+  volume_discounts
+}
+
+TableGroup Promo_Engine {
+  promo_codes
+  promo_code_redemptions
+  promo_rules
+  promo_rule_items
+}
+
+TableGroup Carts {
+  carts
+  cart_items
+}
+
+TableGroup Orders_Payments {
+  orders
+  order_items
+  order_transactions
+}
+
+TableGroup Loyalty {
+  loyalty_balances
+  loyalty_transactions
+  loyalty_redemption_rules
+}
+
+TableGroup Search {
+  search_index_queue
+}
+
+TableGroup Content_Marketing {
+  banner
+  marketing_attributions
+}
+
+TableGroup Reviews {
+  product_reviews
+  review_images
+}
+
+TableGroup Wishlists {
+  wishlists
+  wishlist_items
+}
+
+TableGroup Master_Data {
+  master_geo_countries
+  master_geo_states
+  master_geo_cities
+  master_return_reasons
+  master_help_articles
+  master_system_settings
+}
+

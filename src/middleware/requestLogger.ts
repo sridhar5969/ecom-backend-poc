@@ -32,7 +32,7 @@ function getClientIp(req: Request): string {
 /**
  * Sanitize request body to remove sensitive information
  */
-function sanitizeRequestBody(body: any): any {
+export function sanitizeRequestBody(body: any): any {
 	if (!body || typeof body !== 'object') {
 		return body;
 	}

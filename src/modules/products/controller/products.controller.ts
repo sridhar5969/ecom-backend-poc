@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
+
 import { ImportMaterialsService } from '../services/import-materials.service';
+import { ProductBundlesManagementService } from '../services/products-bundles-managements.service';
 import { ProductsService } from '../services/products.service';
+import validators from './validator';
 import { NotFoundResponse, SuccessResponse } from '@/utils/apiResponse';
 import logger from '@/utils/logger/logger';
 import { successResponse } from '@/utils/responseFormatter';
@@ -19,6 +22,8 @@ type NormalizedUpload = {
 
 export class ProductsController {
 	private static readonly productsService = new ProductsService();
+	private static readonly bundlesService =
+		new ProductBundlesManagementService();
 
 	private static readonly importMaterialsService =
 		new ImportMaterialsService();
@@ -55,6 +60,118 @@ export class ProductsController {
 				return new NotFoundResponse(res, 'Product not found').send();
 			}
 			return new SuccessResponse(res, { data }).send();
+		} catch (error) {
+			logger.error(`ERROR_${task}`, { error });
+			throw error;
+		}
+	}
+
+	public static async getBundleDetailsController(
+		req: Request,
+		res: Response,
+	) {
+		const task = 'GET_BUNDLE_DETAILS';
+		try {
+			const { slug } = req.params as { slug?: string };
+			const data =
+				await ProductsController.bundlesService.getBundleDetails(
+					slug ?? '',
+				);
+			if (!data) {
+				return new NotFoundResponse(
+					res,
+					'Bundle product not found',
+				).send();
+			}
+			return new SuccessResponse(res, { data }).send();
+		} catch (error) {
+			logger.error(`ERROR_${task}`, { error });
+			throw error;
+		}
+	}
+
+	public static async createBundleController(req: Request, res: Response) {
+		const task = 'CREATE_BUNDLE';
+		try {
+			console.log('Creating bundle with body:', req.body);
+			const parsed = validators.CreateBundleSchema.parse(req.body);
+
+			const result =
+				await ProductsController.bundlesService.createBundle(parsed);
+
+			return new SuccessResponse(res, result).send();
+		} catch (error) {
+			logger.error(`ERROR_${task}`, { error });
+			throw error;
+		}
+	}
+
+	public static async getAvailableVariantsController(
+		req: Request,
+		res: Response,
+	) {
+		const task = 'GET_AVAILABLE_VARIANTS';
+		try {
+			const variants =
+				await ProductsController.bundlesService.getAvailableVariantsForBundle();
+
+			return new SuccessResponse(res, {
+				success: true,
+				data: variants,
+				count: variants.length,
+			}).send();
+		} catch (error) {
+			logger.error(`ERROR_${task}`, { error });
+			throw error;
+		}
+	}
+
+	public static async updateBundleController(req: Request, res: Response) {
+		const task = 'UPDATE_BUNDLE';
+		try {
+			const { variantId } = req.params as { variantId?: string };
+
+			if (!variantId) {
+				return res.status(400).json({
+					success: false,
+					message: 'variantId is required',
+				});
+			}
+
+			const parsed = validators.UpdateBundleSchema.parse(req.body);
+
+			const { components } = parsed;
+
+			const result = await ProductsController.bundlesService.updateBundle(
+				{
+					variantId,
+					components,
+				},
+			);
+
+			return new SuccessResponse(res, result).send();
+		} catch (error) {
+			logger.error(`ERROR_${task}`, { error });
+			throw error;
+		}
+	}
+
+	public static async deleteBundleController(req: Request, res: Response) {
+		const task = 'DELETE_BUNDLE';
+		try {
+			const { variantId } = req.params as { variantId?: string };
+
+			if (!variantId) {
+				return res.status(400).json({
+					success: false,
+					message: 'variantId is required',
+				});
+			}
+
+			const result =
+				await ProductsController.bundlesService.deleteBundle(variantId);
+
+			return new SuccessResponse(res, result).send();
 		} catch (error) {
 			logger.error(`ERROR_${task}`, { error });
 			throw error;
