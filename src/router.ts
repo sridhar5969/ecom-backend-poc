@@ -6,6 +6,7 @@ import cartRouter from './modules/cart/controller';
 import healthRouter from './modules/health-check';
 import productsRouter from './modules/products/controller';
 import sessionRouter from './modules/session/controller';
+import wishlistsRouter from './modules/wishlists/controllers';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.use('/health', healthRouter);
 // router.use(protect);
 router.use('/products', productsRouter);
 router.use('/cart', cartRouter);
+router.use('/wishlists', wishlistsRouter);
 router.use('/auth', authRouter);
 // router.use(protect);
 

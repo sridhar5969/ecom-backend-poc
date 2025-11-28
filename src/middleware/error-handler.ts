@@ -1,8 +1,18 @@
 import * as express from 'express';
 import { z, ZodError } from 'zod/v4';
 
+import AppError, { PayloadValidatorError } from '@/abstractions/AppError';
 import { AppGlobalError } from '@/abstractions/formatError';
-import { BadRequestResponse } from '@/utils/apiResponse';
+
+import {
+	BadRequestResponse,
+	UnauthorizedResponse,
+	ForbiddenResponse,
+	NotFoundResponse,
+	ConflictResponse,
+	InternalErrorResponse,
+} from '@/utils/apiResponse';
+
 import logger from '@/utils/logger/logger';
 
 function tryParseJson(str: string) {
@@ -14,47 +24,68 @@ function tryParseJson(str: string) {
 }
 
 const addErrorHandler = (
-	err: AppGlobalError,
+	err: AppGlobalError | Error,
 	req: express.Request,
 	res: express.Response,
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	next: express.NextFunction,
 ) => {
-	const parsedStackError = tryParseJson(err.stackErr); // For Zod errors
-
-	const statusCode = err.statusCode || 500;
-	const clientMessage = err.message;
-	// statusCode >= 500 ? 'Something went wrong' : err.message;
+	const parsedStackError = tryParseJson((err as any).stackErr);
+	const statusCode = (err as any).statusCode ?? 500;
+	const message = err.message ?? 'Internal Server Error';
 
 	logger.error('API error', {
-		message: err.message || 'Internal Server Error',
+		message,
 		statusCode,
 		request: {
 			method: req.method,
 			url: req.url,
 			headers: req.headers,
-			// body: req.body,
 		},
 		userDetails: req?.user_details,
 		parsedStackError,
 		stack: err.stack,
-		actualStack: err.stackErr,
+		actualStack: (err as any).stackErr,
 	});
-	if (err instanceof ZodError)
+
+	// -------------------------------------------------------
+	// 1️⃣ Zod Validation Errors
+	// -------------------------------------------------------
+	if (err instanceof ZodError) {
 		return new BadRequestResponse(res, z.prettifyError(err)).send();
-
-	const success = statusCode >= 200 && statusCode < 300;
-	const payload: Record<string, unknown> = {
-		success,
-		timestamp: new Date().toISOString(),
-		message: clientMessage,
-	};
-
-	if (parsedStackError?.fieldErrors) {
-		payload.errors = parsedStackError.fieldErrors;
 	}
 
-	res.status(statusCode).json(payload);
+	// -------------------------------------------------------
+	// 2️⃣ PayloadValidatorError (400)
+	// -------------------------------------------------------
+	if (err instanceof PayloadValidatorError) {
+		return new BadRequestResponse(res, err.message).send();
+	}
+
+	// -------------------------------------------------------
+	// 3️⃣ AppError-based responses mapped to your ApiResponse classes
+	// -------------------------------------------------------
+	if (err instanceof AppError) {
+		switch (err.statusCode) {
+			case 400:
+				return new BadRequestResponse(res, err.message).send();
+			case 401:
+				return new UnauthorizedResponse(res, err.message).send();
+			case 403:
+				return new ForbiddenResponse(res, err.message).send();
+			case 404:
+				return new NotFoundResponse(res, err.message).send();
+			case 409:
+				return new ConflictResponse(res, err.message).send();
+			default:
+				return new InternalErrorResponse(res, err.message).send();
+		}
+	}
+
+	// -------------------------------------------------------
+	// 4️⃣ Unknown Error → Always 500
+	// -------------------------------------------------------
+	return new InternalErrorResponse(res, 'Internal Server Error').send();
 };
 
 export default addErrorHandler;
