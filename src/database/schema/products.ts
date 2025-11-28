@@ -33,7 +33,28 @@ export const categories = pgTable('categories', {
 	parentId: uuid('parent_id'),
 	createdAt: timestamp('created_at'),
 });
-
+type ProductMetadata = {
+	displayStock?: number;
+	materialCode?: string;
+	baseUnit?: string;
+	materialType?: string;
+	abcIndicators?: string[];
+	currencies?: string[];
+	mrpTypes?: string[];
+	purchasingGroups?: string[];
+	priceUnits?: number[];
+	lastSyncedAt?: string;
+	avg_rating?: number;
+	total_ratings?: number;
+	default_image_url?: string | null;
+	lowest_price_amount?: number;
+	currency?: string;
+	lowest_compare_at_amount?: number | null;
+};
+type ProductFlags = {
+	isFeatured?: boolean;
+	isOnSale?: boolean;
+};
 export const products = pgTable('products', {
 	id: uuid('id').defaultRandom().primaryKey(),
 	brandId: uuid('brand_id').references(() => brands.id),
@@ -41,8 +62,15 @@ export const products = pgTable('products', {
 		() => categories.id,
 	),
 	title: varchar('title'),
-	flags: jsonb('flags'),
-	metadata: jsonb('metadata'),
+	flags: jsonb('flags')
+		.$type<ProductFlags>()
+		.$default(() => ({
+			isFeatured: false,
+			isOnSale: false,
+		})),
+	metadata: jsonb('metadata')
+		.default({})
+		.$type<ProductMetadata>(),
 	slug: varchar('slug').unique(),
 	description: text('description'),
 	type: productTypeEnum('type').default('simple'),
