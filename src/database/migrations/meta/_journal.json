@@ -5,34 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1764176294889,
-      "tag": "20251126165814_violet_lake",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1764179676802,
-      "tag": "20251126175436_lean_puff_adder",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1764238028110,
-      "tag": "20251127100708_foamy_chat",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-<<<<<<< Updated upstream
-      "when": 1764318183279,
-      "tag": "20251128082303_right_nekra",
-=======
-      "when": 1764330697324,
-      "tag": "20251128115137_quick_starjammers",
->>>>>>> Stashed changes
+      "when": 1764578673520,
+      "tag": "20251201084433_cool_titanium_man",
       "breakpoints": true
     }
   ]

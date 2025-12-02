@@ -37,25 +37,6 @@ export const reviewImages = pgTable('review_images', {
 	createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const wishlists = pgTable('wishlists', {
-	id: uuid('id').defaultRandom().primaryKey(),
-	userId: uuid('user_id').references(() => users.id),
-	name: varchar('name').default('My Wishlist'),
-	isPublic: boolean('is_public').default(false),
-	shareToken: varchar('share_token').unique(),
-	createdAt: timestamp('created_at').defaultNow(),
-	updatedAt: timestamp('updated_at'),
-});
-
-export const wishlistItems = pgTable('wishlist_items', {
-	id: uuid('id').defaultRandom().primaryKey(),
-	wishlistId: uuid('wishlist_id').references(() => wishlists.id),
-	productId: uuid('product_id').references(() => products.id),
-	variantId: uuid('variant_id').references(() => productVariants.id),
-	addedAt: timestamp('added_at').defaultNow(),
-	priority: integer('priority').default(0),
-});
-
 export const banner = pgTable('banner', {
 	id: uuid('id').defaultRandom().primaryKey(),
 	kicker: varchar('kicker'),
@@ -145,29 +126,6 @@ export const reviewImagesRelations = relations(reviewImages, ({ one }) => ({
 	review: one(productReviews, {
 		fields: [reviewImages.reviewId],
 		references: [productReviews.id],
-	}),
-}));
-
-export const wishlistsRelations = relations(wishlists, ({ one, many }) => ({
-	user: one(users, {
-		fields: [wishlists.userId],
-		references: [users.id],
-	}),
-	items: many(wishlistItems),
-}));
-
-export const wishlistItemsRelations = relations(wishlistItems, ({ one }) => ({
-	wishlist: one(wishlists, {
-		fields: [wishlistItems.wishlistId],
-		references: [wishlists.id],
-	}),
-	product: one(products, {
-		fields: [wishlistItems.productId],
-		references: [products.id],
-	}),
-	variant: one(productVariants, {
-		fields: [wishlistItems.variantId],
-		references: [productVariants.id],
 	}),
 }));
 

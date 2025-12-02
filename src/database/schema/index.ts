@@ -9,3 +9,4 @@ export * from './content';
 export * from './system';
 export * from './marketing';
 export * from './rolePermissions';
+export * from './wishlists';
