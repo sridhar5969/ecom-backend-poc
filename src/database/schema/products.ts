@@ -19,7 +19,12 @@ export const brands = pgTable('brands', {
 	id: uuid('id').defaultRandom().primaryKey(),
 	name: varchar('name'),
 	description: text('description'),
-	attributes: jsonb('attributes'),
+	attributes: jsonb('attributes')
+		.$type<{
+			theme_color?: string;
+			banner_image?: string;
+		}>()
+		.default({}),
 	slug: varchar('slug').unique(),
 	logoUrl: text('logo_url'),
 	isActive: boolean('is_active').default(true),
