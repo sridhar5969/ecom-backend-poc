@@ -1,3 +1,4 @@
+import { RtkQueryError } from './../../../../../frontend/src/types/api.types';
 import { Request, Response } from 'express';
 
 import { ImportMaterialsService } from '../services/import-materials.service';
@@ -31,13 +32,13 @@ export class ProductsController {
 	public static async getAllProductsController(req: Request, res: Response) {
 		const task = 'GET_ALL_PRODUCTS';
 		try {
-			const { limit = 10, page = 1 } = req.query;
-			const params = {
-				limit: Number(limit),
-				page: Number(page),
-			};
+			const queryParams = validators.ProductListQuerySchema.parse(
+				req.query,
+			);
 			const data =
-				await ProductsController.productsService.getAllProducts(params);
+				await ProductsController.productsService.getAllProducts(
+					queryParams,
+				);
 			return new SuccessResponse(res, data).send();
 		} catch (error) {
 			logger.error(`ERROR_${task}`, { error });

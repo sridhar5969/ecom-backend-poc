@@ -1,5 +1,6 @@
 import { type SQL, and, eq, ilike, inArray, sql } from 'drizzle-orm';
 
+import { ProductListQueryType } from '../controller/validator';
 import { ProductBundlesManagementService } from './products-bundles-managements.service';
 import { db } from '@/database';
 import {
@@ -11,18 +12,6 @@ import {
 	productVariants,
 	products,
 } from '@/database/schema/products';
-
-export type ProductQueryParams = {
-	page?: number;
-	limit?: number;
-	search?: string;
-	status?: string;
-	category_id?: string;
-	categoryId?: string;
-	brand_id?: string;
-	brandId?: string;
-	slug?: string;
-};
 
 export class ProductsService {
 	constructor() {}
@@ -41,38 +30,22 @@ export class ProductsService {
 		return data;
 	}
 
-	async getAllProducts(params: ProductQueryParams = {}) {
+	async getAllProducts(params: ProductListQueryType) {
 		const page = Math.max(params.page ?? 1, 1);
 		const limit = Math.min(Math.max(params.limit ?? 20, 1), 100);
 		const offset = (page - 1) * limit;
 		const filters: SQL[] = [];
-		const searchTerm = params.search?.trim();
-		const statusFilter = params.status;
-		const brandFilter = params.brand_id ?? params.brandId;
-		const categoryFilter = params.category_id ?? params.categoryId;
 
-		if (statusFilter) {
-			filters.push(eq(products.status, statusFilter));
+		if (params.brand) {
+			filters.push(inArray(brands.slug, params.brand));
 		}
 
-		if (brandFilter) {
-			filters.push(eq(products.brandId, brandFilter));
+		if (params.search) {
+			filters.push(ilike(products.title, `%${params.search}%`));
 		}
 
-		if (searchTerm) {
-			filters.push(ilike(products.title, `%${searchTerm}%`));
-		}
-
-		if (categoryFilter) {
-			filters.push(
-				sql`
-					EXISTS (
-						SELECT 1 FROM ${productCategories}
-						WHERE ${productCategories.productId} = ${products.id}
-							AND ${productCategories.categoryId} = ${categoryFilter}
-					)
-				`,
-			);
+		if (params.category) {
+			filters.push(inArray(categories.slug, params.category));
 		}
 
 		const whereClause = filters.length ? and(...filters) : undefined;
@@ -151,7 +124,12 @@ export class ProductsService {
 
 		const baseTotalCountQuery = db
 			.select({ count: sql<number>`COUNT(*)` })
-			.from(products);
+			.from(products)
+			.leftJoin(brands, eq(brands.id, products.brandId))
+			.leftJoin(
+				categories,
+				eq(categories.id, products.canonicalCategoryId),
+			);
 		const totalCountQuery = whereClause
 			? baseTotalCountQuery.where(whereClause)
 			: baseTotalCountQuery;

@@ -42,11 +42,47 @@ const UpdateBundleSchema = z.object({
 		.array(BundleComponentSchema)
 		.min(1, 'At least one component is required'),
 });
-export type CreateBundlePayloadType = zodInfer<typeof CreateBundleSchema>;
 
+const ProductListQuerySchema = z
+	.object({
+		// 1. Pagination (Coerces "10" -> 10, sets defaults)
+		page: z.coerce.number().min(1).default(1),
+		limit: z.coerce.number().min(1).max(100).default(20),
+
+		// 2. Search
+		search: z.string().trim().optional(),
+
+		// 3. Sorting (Optional, defaults to created_at desc)
+		sort: z.string().default('-createdAt'),
+
+		// 4. Ranges (Coerce strings to numbers)
+		min_price: z.coerce.number().min(0).optional(),
+		max_price: z.coerce.number().min(0).optional(),
+
+		// 5. Multi-Select Filters (Comma-separated string -> Array)
+		// Input: ?brand=samsung,apple
+		// Output: ['samsung', 'apple']
+		brand: z
+			.string()
+			.transform((val) => (val ? val.split(',') : undefined))
+			.optional(),
+
+		category: z
+			.string()
+			.transform((val) => (val ? val.split(',') : undefined))
+			.optional(),
+
+		// 6. Boolean filters (e.g. ?in_stock=true)
+		in_stock: z.coerce.boolean().optional(),
+	})
+	.strict();
+
+export type CreateBundlePayloadType = zodInfer<typeof CreateBundleSchema>;
+export type ProductListQueryType = zodInfer<typeof ProductListQuerySchema>;
 export default {
 	validateGetProductsByCategory,
 	CreateBundleSchema,
 	UpdateBundleSchema,
 	BundleComponentSchema,
+	ProductListQuerySchema,
 };
