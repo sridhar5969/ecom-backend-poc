@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { AccessTokenType } from './protect';
-import { UserRole } from '@/database/schema'; // Adjust path if needed
 import { PermissionsManagementService } from '@/modules/auth/services/permissions.service';
 import logger from '@/utils/logger/logger';
 import { safeJwtVerify } from '@/utils/validations';
