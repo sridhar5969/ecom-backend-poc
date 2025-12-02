@@ -1,4 +1,3 @@
-// middleware/parseRequest.ts
 import { Request, Response, NextFunction } from 'express';
 import { ZodType } from 'zod/v4';
 import formatError from '@/abstractions/formatError';

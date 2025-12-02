@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 // import { eq } from 'drizzle-orm';
-import AppError from '@/abstractions/AppError';
-import formatError from '@/abstractions/formatError';
+import AppError, { UnauthorizedError } from '@/abstractions/AppError';
 import { UserRole } from '@/database/schema';
 import { PermissionsManagementService } from '@/modules/auth/services/permissions.service';
 import { safeJwtVerify } from '@/utils/validations';
@@ -31,10 +30,7 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
 		}
 
 		if (!token) {
-			throw new AppError(
-				'Authentication token missing',
-				StatusCodes.UNAUTHORIZED,
-			);
+			throw new UnauthorizedError('Authentication token missing');
 		}
 
 		const result = safeJwtVerify<AccessTokenType>(token);
@@ -95,7 +91,7 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
 
 		next();
 	} catch (err) {
-		return formatError(next, err);
+		return next(err);
 	}
 };
 export default protect;

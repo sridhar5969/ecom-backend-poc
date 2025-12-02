@@ -84,6 +84,7 @@
         "@types/uuid": "^10.0.0",
         "@typescript-eslint/eslint-plugin": "^8.46.4",
         "@typescript-eslint/parser": "^8.46.4",
+        "country-state-city": "^3.2.1",
         "cross-env": "^10.1.0",
         "drizzle-kit": "^0.31.4",
         "eslint": "^9.39.0",
@@ -100,8 +101,7 @@
         "tsc-alias": "^1.8.16",
         "tsconfig-paths": "^4.2.0",
         "tsx": "^4.20.4",
-        "typescript-eslint": "^8.46.4",
-        "country-state-city": "^3.2.1"
+        "typescript-eslint": "^8.46.4"
     },
     "lint-staged": {
         "src/**/*.ts": [
