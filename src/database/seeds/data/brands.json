@@ -1,52 +1,5 @@
 [
-    {
-        "id": "b1a2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
-        "name": "Samsung",
-        "description": "Leading electronics and technology brand",
-        "slug": "samsung",
-        "logoUrl": "/brands/samsung.png",
-        "isActive": true,
-        "attributes": {
-            "country": "South Korea",
-            "founded": 1938
-        }
-    },
-    {
-        "id": "c2b3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
-        "name": "Apple",
-        "description": "Premium technology and consumer electronics",
-        "slug": "apple",
-        "logoUrl": "/brands/apple.png",
-        "isActive": true,
-        "attributes": {
-            "country": "USA",
-            "founded": 1976
-        }
-    },
-    {
-        "id": "d3c4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f",
-        "name": "Nike",
-        "description": "Athletic footwear and apparel",
-        "slug": "nike",
-        "logoUrl": "/brands/nike.png",
-        "isActive": true,
-        "attributes": {
-            "country": "USA",
-            "founded": 1964
-        }
-    },
-    {
-        "id": "e4d5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a",
-        "name": "Adidas",
-        "description": "Sports apparel and equipment",
-        "slug": "adidas",
-        "logoUrl": "/brands/adidas.png",
-        "isActive": true,
-        "attributes": {
-            "country": "Germany",
-            "founded": 1949
-        }
-    },
+  
     {
         "id": "brand-indomie-001",
         "name": "Indomie",
@@ -55,8 +8,8 @@
         "logoUrl": "/brands/indomie.png",
         "isActive": true,
         "attributes": {
-            "country": "Indonesia/Nigeria",
-            "founded": 1972
+            "theme_color": "#1428a0",
+            "banner_image":"https://images.pexels.com/photos/1054655/pexels-photo-1054655.jpeg"
         }
     },
     {
@@ -67,8 +20,8 @@
         "logoUrl": "/brands/minimie.png",
         "isActive": true,
         "attributes": {
-            "country": "Nigeria",
-            "founded": 2015
+            "theme_color": "#1428a0",
+            "banner_image":"https://images.pexels.com/photos/1054655/pexels-photo-1054655.jpeg"
         }
     },
     {
@@ -79,8 +32,8 @@
         "logoUrl": "/brands/power-oil.png",
         "isActive": true,
         "attributes": {
-            "country": "Nigeria",
-            "founded": 2012
+            "theme_color": "#1428a0",
+            "banner_image":"https://images.pexels.com/photos/1054655/pexels-photo-1054655.jpeg"
         }
     },
     {
@@ -91,8 +44,8 @@
         "logoUrl": "/brands/kelloggs.png",
         "isActive": true,
         "attributes": {
-            "country": "USA",
-            "founded": 1906
+            "theme_color": "#1428a0",
+            "banner_image":"https://images.pexels.com/photos/1054655/pexels-photo-1054655.jpeg"
         }
     },
     {
@@ -103,8 +56,81 @@
         "logoUrl": "/brands/dano.png",
         "isActive": true,
         "attributes": {
-            "country": "Denmark/Nigeria",
-            "founded": 1881
+            "theme_color": "#1428a0",
+            "banner_image":"https://images.pexels.com/photos/1054655/pexels-photo-1054655.jpeg"
+        }
+    }
+    ,
+    {
+        "id": "brand-lush-001",
+        "name": "Lush",
+        "description": "Premium hair and skincare products",
+        "slug": "lush",
+        "logoUrl": "/brands/lush.png",
+        "isActive": true,
+        "attributes": {
+            "theme_color": "#9B59B6",
+            "banner_image": "https://images.pexels.com/photos/1747858989102-cca0f4dc4a11"
+        }
+    },
+    {
+        "id": "brand-guinness-001",
+        "name": "Guinness",
+        "description": "Iconic stout and beverages brand",
+        "slug": "guinness",
+        "logoUrl": "/brands/guinness.png",
+        "isActive": true,
+        "attributes": {
+            "theme_color": "#000000",
+            "banner_image": "https://images.pexels.com/photos/1638609269267-f0128098a809"
+        }
+    },
+    {
+        "id": "brand-colgate-001",
+        "name": "Colgate",
+        "description": "Oral care and hygiene products",
+        "slug": "colgate",
+        "logoUrl": "/brands/colgate.png",
+        "isActive": true,
+        "attributes": {
+            "theme_color": "#00ACEF",
+            "banner_image": "https://images.pexels.com/photos/1628610688436-e635552020fc"
+        }
+    },
+    {
+        "id": "brand-powerpasta-001",
+        "name": "Power Pasta",
+        "description": "Pasta & noodles",
+        "slug": "power-pasta",
+        "logoUrl": "/brands/power-pasta.png",
+        "isActive": true,
+        "attributes": {
+            "theme_color": "#F4A261",
+            "banner_image": "https://images.pexels.com/photos/1667242003572-96caaf8ac5c4"
+        }
+    },
+    {
+        "id": "brand-mimee-001",
+        "name": "Mimee",
+        "description": "Instant noodles",
+        "slug": "mimee",
+        "logoUrl": "/brands/mimee.png",
+        "isActive": true,
+        "attributes": {
+            "theme_color": "#29F0A1",
+            "banner_image": "https://images.pexels.com/photos/1621470626424-5c3f5fee3269"
+        }
+    },
+    {
+        "id": "brand-indomie-cafe-001",
+        "name": "Indomie Cafe",
+        "description": "Indomie brand cafe and experiences",
+        "slug": "indomie-cafe",
+        "logoUrl": "/brands/indomie-cafe.png",
+        "isActive": true,
+        "attributes": {
+            "theme_color": "#E74C3C",
+            "banner_image": "https://images.pexels.com/photos/1546938576-8219ca96ffb5"
         }
     }
 ]

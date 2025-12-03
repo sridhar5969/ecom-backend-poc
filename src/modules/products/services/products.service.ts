@@ -333,6 +333,8 @@ export class ProductsService {
 			variantImageMap.set(image.variantId, list);
 		}
 
+		const productMetadata = (product.metadata ?? {}) as Record<string, any>;
+
 		const variants = variantRows.map((variant) => {
 			return {
 				id: variant.id,
@@ -357,7 +359,7 @@ export class ProductsService {
 						sort_order: image.sortOrder ?? undefined,
 					}),
 				),
-				available_stock: product.metadata.displayStock || 0,
+				available_stock: productMetadata.displayStock ?? 0,
 			};
 		});
 
@@ -422,8 +424,8 @@ export class ProductsService {
 			updated_at: product.updatedAt
 				? new Date(product.updatedAt).toISOString()
 				: undefined,
-			review_count: product.metadata.total_ratings || 0,
-			average_rating: product.metadata.avg_rating || 0,
+			review_count: product.metadata?.total_ratings || 0,
+			average_rating: product.metadata?.avg_rating || 0,
 			bundles:
 				await new ProductBundlesManagementService().getBundlesByVariant(
 					variants.map((v) => v.id),

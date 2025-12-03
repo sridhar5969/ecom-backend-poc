@@ -62,6 +62,16 @@ const envSchema = z.object({
 	DB_SEEDING: stringBoolean,
 
 	TZ: z.string().default('UTC'),
+
+	//payment gateway - traction
+	PAYMENT_PROVIDER: z
+		.enum(['traction', 'paystack', 'flutterwave'])
+		.default('traction'),
+
+	TRACTION_BASE_URL: z.string().optional(),
+	TRACTION_CLIENT_ID: z.string().optional(),
+	TRACTION_CLIENT_SECRET: z.string().optional(),
+	TRACTION_WEBHOOK_SECRET: z.string().optional(),
 });
 
 export function initEnv() {
