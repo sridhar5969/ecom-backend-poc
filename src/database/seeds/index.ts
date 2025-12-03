@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { eq } from 'drizzle-orm';
 import { db } from '../index';
 import { banner, featuredProducts, relatedProducts } from '../schema/content';
 import { inventoryLevels, stores } from '../schema/inventory';
@@ -59,11 +60,41 @@ function getUuid(oldId: string): string {
 	return randomUUID();
 }
 
+async function tableExists(tableName: string): Promise<boolean> {
+	// Check if a table exists in the public schema
+	try {
+		const q = `SELECT EXISTS (
+			SELECT 1 FROM information_schema.tables
+			WHERE table_schema = 'public' AND table_name = '${tableName}'
+		) as exists`;
+		const res: any = await db.execute(q);
+
+		if (res && res.rows && res.rows[0]) return Boolean(res.rows[0].exists);
+		if (
+			Array.isArray(res) &&
+			res[0] &&
+			typeof res[0].exists !== 'undefined'
+		)
+			return Boolean(res[0].exists);
+		return false;
+	} catch {
+		return false;
+	}
+}
+
 export async function seedMasterData() {
 	console.log('🌱 Seeding master data...');
 
 	console.log('  → Seeding currencies...');
-	await db.insert(currencies).values(currenciesData).onConflictDoNothing();
+	const existingCurrencies = await db.select().from(currencies).limit(1);
+	if (existingCurrencies.length > 0) {
+		console.log('  ⏭️  Currencies already exist, skipping insert...');
+	} else {
+		await db
+			.insert(currencies)
+			.values(currenciesData)
+			.onConflictDoNothing();
+	}
 
 	console.log('  → Seeding tax rules...');
 	await db
@@ -229,6 +260,11 @@ export async function seedMasterData() {
 
 export async function seedUsers() {
 	console.log('🌱 Seeding users...');
+	const checkUsers = await db.select().from(users).limit(1);
+	if (checkUsers.length > 0) {
+		console.log('✅ Users already seeded, skipping...');
+		return;
+	}
 	for (const userData of usersData) {
 		await db
 			.insert(users)
@@ -243,6 +279,11 @@ export async function seedUsers() {
 
 export async function seedRolePermissions() {
 	console.log('🌱 Seeding role permissions...');
+	const checkRolePerms = await db.select().from(rolePermissions).limit(1);
+	if (checkRolePerms.length > 0) {
+		console.log('✅ Role permissions already seeded, skipping...');
+		return;
+	}
 	const allPermissions = await db.select().from(permissions);
 	const permissionMap = new Map(allPermissions.map((p) => [p.name, p.id]));
 
@@ -265,6 +306,14 @@ export async function seedProducts() {
 	console.log('🌱 Seeding products...');
 
 	const existingProducts = await db.select().from(products);
+	if (existingProducts.length > 0) {
+		console.log('✅ Products already seeded, skipping...');
+		return;
+	}
+
+	// Check optional tables existence to avoid hard failures if schema differs
+	const hasFeaturedTable = await tableExists('featured_products');
+	const hasRelatedTable = await tableExists('related_products');
 	const existingProductSlugMap = new Map(
 		existingProducts.map((p) => [p.slug, p.id]),
 	);
@@ -296,10 +345,21 @@ export async function seedProducts() {
 			...productFields
 		} = productData;
 
+		const productMetadataFromSource =
+			productFields.metadata ?? productData.metadata;
+
+		const normalizedMetadata = {
+			...(productMetadataFromSource ?? {}),
+			total_ratings: productMetadataFromSource?.total_ratings ?? 0,
+			avg_rating: productMetadataFromSource?.avg_rating ?? 0,
+			displayStock: productMetadataFromSource?.displayStock ?? 0,
+		} as any;
+
 		const [product] = await db
 			.insert(products)
 			.values({
 				...productFields,
+				metadata: normalizedMetadata,
 				id: productId,
 				brandId: productFields.brandId
 					? brandMap.get(productFields.brandId) ||
@@ -308,7 +368,7 @@ export async function seedProducts() {
 				canonicalCategoryId: productData.canonicalCategoryId
 					? categoryMap.get(productData.canonicalCategoryId)
 					: null,
-				type: productData.type as any,
+				type: productData.type as 'simple' | 'bundle',
 			})
 			.onConflictDoNothing()
 			.returning();
@@ -338,6 +398,8 @@ export async function seedProducts() {
 		}
 
 		if (product && variants) {
+			// accumulate total stock for product across all variants
+			let totalStockForProduct = 0;
 			for (const variantData of variants) {
 				const variantId = variantMap.get(variantData.id)!;
 				const { inventory, ...variantFields } = variantData;
@@ -364,41 +426,80 @@ export async function seedProducts() {
 							})),
 						)
 						.onConflictDoNothing();
+
+					// sum inventory for displayStock
+					for (const inv of inventory) {
+						totalStockForProduct += Number(inv.stock ?? 0);
+					}
+				}
+			}
+
+			// update product metadata displayStock with computed total
+			if (totalStockForProduct >= 0) {
+				try {
+					await db
+						.update(products)
+						.set({
+							metadata: {
+								...normalizedMetadata,
+								displayStock: totalStockForProduct,
+							},
+						})
+						.where(eq(products.id, product.id))
+						.execute();
+				} catch {
+					console.warn(
+						`Warning: failed to update product metadata displayStock for product ${product.id}`,
+					);
 				}
 			}
 		}
 
 		if (product && featured) {
-			await db
-				.insert(featuredProducts)
-				.values({
-					productId: product.id,
-					variantId: variantMap.get(productData.variants?.[0]?.id),
-					section: featured.section,
-					displayOrder: featured.displayOrder,
-					isActive: true,
-				})
-				.onConflictDoNothing();
+			if (hasFeaturedTable) {
+				await db
+					.insert(featuredProducts)
+					.values({
+						productId: product.id,
+						variantId: variantMap.get(
+							productData.variants?.[0]?.id,
+						),
+						section: featured.section,
+						displayOrder: featured.displayOrder,
+						isActive: true,
+					})
+					.onConflictDoNothing();
+			} else {
+				console.log(
+					"  ⚠️  Skipping featured_products insert: table 'featured_products' not found",
+				);
+			}
 		}
 	}
 
 	console.log('  → Seeding related products...');
-	for (const productData of productsData) {
-		const productId = productMap.get(productData.id)!;
-		const { relatedProducts: relProducts } = productData;
+	if (!hasRelatedTable) {
+		console.log(
+			"  ⚠️  Skipping related_products inserts: table 'related_products' not found",
+		);
+	} else {
+		for (const productData of productsData) {
+			const productId = productMap.get(productData.id)!;
+			const { relatedProducts: relProducts } = productData;
 
-		if (relProducts && relProducts.length > 0) {
-			await db
-				.insert(relatedProducts)
-				.values(
-					relProducts.map((relId: string, idx: number) => ({
-						productId: productId,
-						relatedProductId: productMap.get(relId)!,
-						relationType: 'similar',
-						displayOrder: idx,
-					})),
-				)
-				.onConflictDoNothing();
+			if (relProducts && relProducts.length > 0) {
+				await db
+					.insert(relatedProducts)
+					.values(
+						relProducts.map((relId: string, idx: number) => ({
+							productId: productId,
+							relatedProductId: productMap.get(relId)!,
+							relationType: 'similar',
+							displayOrder: idx,
+						})),
+					)
+					.onConflictDoNothing();
+			}
 		}
 	}
 

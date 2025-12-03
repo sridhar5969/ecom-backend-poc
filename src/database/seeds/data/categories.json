@@ -1,92 +1,44 @@
 [
     {
-        "id": "cat-electronics-001",
-        "name": "Electronics",
-        "slug": "electronics",
+        "id": "cat-hair-care-001",
+        "name": "Hair Care",
+        "slug": "hair-care",
         "parentId": null
     },
     {
-        "id": "cat-smartphones-001",
-        "name": "Smartphones",
-        "slug": "smartphones",
-        "parentId": "cat-electronics-001"
-    },
-    {
-        "id": "cat-laptops-001",
-        "name": "Laptops",
-        "slug": "laptops",
-        "parentId": "cat-electronics-001"
-    },
-    {
-        "id": "cat-fashion-001",
-        "name": "Fashion",
-        "slug": "fashion",
+        "id": "cat-instant-noodles-001",
+        "name": "Instant Noodles",
+        "slug": "instant-noodles",
         "parentId": null
     },
     {
-        "id": "cat-mens-fashion-001",
-        "name": "Men's Fashion",
-        "slug": "mens-fashion",
-        "parentId": "cat-fashion-001"
-    },
-    {
-        "id": "cat-womens-fashion-001",
-        "name": "Women's Fashion",
-        "slug": "womens-fashion",
-        "parentId": "cat-fashion-001"
-    },
-    {
-        "id": "cat-sports-001",
-        "name": "Sports & Outdoors",
-        "slug": "sports-outdoors",
+        "id": "cat-snacks-cereals-001",
+        "name": "Snacks & Cereals",
+        "slug": "snacks-cereals",
         "parentId": null
     },
     {
-        "id": "cat-footwear-001",
-        "name": "Footwear",
-        "slug": "footwear",
-        "parentId": "cat-sports-001"
-    },
-    {
-        "id": "cat-groceries-001",
-        "name": "Groceries",
-        "slug": "groceries",
+        "id": "cat-beverages-001",
+        "name": "Beverages",
+        "slug": "beverages",
         "parentId": null
     },
     {
-        "id": "cat-food-cupboard-001",
-        "name": "Food Cupboard",
-        "slug": "food-cupboard",
-        "parentId": "cat-groceries-001"
+        "id": "cat-cooking-oils-001",
+        "name": "Cooking Oil",
+        "slug": "cooking-oil",
+        "parentId": null
     },
     {
         "id": "cat-noodles-pasta-001",
         "name": "Noodles & Pasta",
         "slug": "noodles-pasta",
-        "parentId": "cat-food-cupboard-001"
+        "parentId": null
     },
     {
-        "id": "cat-cooking-oils-001",
-        "name": "Cooking Oils",
-        "slug": "cooking-oils",
-        "parentId": "cat-food-cupboard-001"
-    },
-    {
-        "id": "cat-breakfast-cereals-001",
-        "name": "Breakfast & Cereals",
-        "slug": "breakfast-cereals",
-        "parentId": "cat-food-cupboard-001"
-    },
-    {
-        "id": "cat-snacks-001",
-        "name": "Snacks",
-        "slug": "snacks",
-        "parentId": "cat-groceries-001"
-    },
-    {
-        "id": "cat-dairy-001",
-        "name": "Dairy",
-        "slug": "dairy",
-        "parentId": "cat-groceries-001"
+        "id": "cat-oral-care-001",
+        "name": "Oral Care",
+        "slug": "oral-care",
+        "parentId": null
     }
 ]

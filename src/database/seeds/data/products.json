@@ -1,501 +1,314 @@
 [
-    {
-        "id": "prod-samsung-s24-001",
-        "brandId": "b1a2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
-        "canonicalCategoryId": "cat-smartphones-001",
-        "title": "Samsung Galaxy S24 Ultra",
-        "slug": "samsung-galaxy-s24-ultra",
-        "description": "The latest flagship smartphone with AI-powered camera and S Pen",
-        "type": "simple",
-        "status": "active",
-        "flags": {
-            "isFeatured": true,
-            "isNew": true
-        },
-        "categories": [
-            "cat-electronics-001",
-            "cat-smartphones-001"
-        ],
-        "images": [
-            {
-                "url": "/products/samsung-s24-ultra-1.jpg",
-                "altText": "Samsung Galaxy S24 Ultra Front View"
-            },
-            {
-                "url": "/products/samsung-s24-ultra-2.jpg",
-                "altText": "Samsung Galaxy S24 Ultra Back View"
-            }
-        ],
-        "variants": [
-            {
-                "id": "var-samsung-s24-256gb",
-                "sku": "SAM-S24U-256-BLK",
-                "name": "256GB Black",
-                "priceAmount": 119999900,
-                "priceCurrency": "NGN",
-                "compareAtAmount": 139999900,
-                "costPriceAmount": 95000000,
-                "weightKg": "0.233",
-                "attributes": {
-                    "color": "Black",
-                    "storage": "256GB",
-                    "ram": "12GB"
-                },
-                "isActive": true,
-                "inventory": [
-                    {
-                        "storeId": "store-main-001",
-                        "stock": 50
-                    },
-                    {
-                        "storeId": "store-branch-001",
-                        "stock": 25
-                    }
-                ]
-            }
-        ],
-        "relatedProducts": [],
-        "featured": {
-            "section": "trending",
-            "displayOrder": 1
-        }
-    },
-    {
-        "id": "prod-iphone-15-001",
-        "brandId": "c2b3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
-        "canonicalCategoryId": "cat-smartphones-001",
-        "title": "iPhone 15 Pro Max",
-        "slug": "iphone-15-pro-max",
-        "description": "Titanium design with A17 Pro chip and advanced camera system",
-        "type": "simple",
-        "status": "active",
-        "flags": {
-            "isFeatured": true,
-            "isNew": true
-        },
-        "categories": [
-            "cat-electronics-001",
-            "cat-smartphones-001"
-        ],
-        "images": [
-            {
-                "url": "/products/iphone-15-pro-1.jpg",
-                "altText": "iPhone 15 Pro Max Front"
-            }
-        ],
-        "variants": [
-            {
-                "id": "var-iphone-15-256gb",
-                "sku": "APL-IP15PM-256-TB",
-                "name": "256GB Titanium Blue",
-                "priceAmount": 159999900,
-                "priceCurrency": "NGN",
-                "compareAtAmount": 169999900,
-                "costPriceAmount": 130000000,
-                "weightKg": "0.221",
-                "attributes": {
-                    "color": "Titanium Blue",
-                    "storage": "256GB",
-                    "ram": "8GB"
-                },
-                "isActive": true,
-                "inventory": [
-                    {
-                        "storeId": "store-main-001",
-                        "stock": 30
-                    }
-                ]
-            }
-        ],
-        "relatedProducts": [
-            "prod-samsung-s24-001"
-        ],
-        "featured": {
-            "section": "trending",
-            "displayOrder": 2
-        }
-    },
-    {
-        "id": "prod-nike-airmax-001",
-        "brandId": "d3c4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f",
-        "canonicalCategoryId": "cat-footwear-001",
-        "title": "Nike Air Max 2024",
-        "slug": "nike-air-max-2024",
-        "description": "Iconic Air Max cushioning with modern design",
-        "type": "simple",
-        "status": "active",
-        "flags": {
-            "isFeatured": true
-        },
-        "categories": [
-            "cat-sports-001",
-            "cat-footwear-001"
-        ],
-        "images": [
-            {
-                "url": "/products/nike-airmax-1.jpg",
-                "altText": "Nike Air Max 2024"
-            }
-        ],
-        "variants": [
-            {
-                "id": "var-nike-airmax-42",
-                "sku": "NIKE-AM24-42-BLK",
-                "name": "Size 42 Black",
-                "priceAmount": 8999900,
-                "priceCurrency": "NGN",
-                "compareAtAmount": 9999900,
-                "costPriceAmount": 6000000,
-                "weightKg": "0.450",
-                "attributes": {
-                    "color": "Black",
-                    "size": "42"
-                },
-                "isActive": true,
-                "inventory": [
-                    {
-                        "storeId": "store-main-001",
-                        "stock": 100
-                    },
-                    {
-                        "storeId": "store-branch-001",
-                        "stock": 50
-                    }
-                ]
-            }
-        ],
-        "relatedProducts": [],
-        "featured": {
-            "section": "best-sellers",
-            "displayOrder": 1
-        }
-    },
-    {
-        "id": "prod-indomie-chicken-001",
-        "brandId": "brand-indomie-001",
-        "canonicalCategoryId": "cat-noodles-pasta-001",
-        "title": "Indomie Instant Noodles Chicken Flavor 70g",
-        "slug": "indomie-instant-noodles-chicken-flavor-70g",
-        "description": "Indomie Chicken Flavour is the first legendary flavour that brought Indomie to Nigeria. It has a rich chicken taste and is delectable.",
-        "type": "simple",
-        "status": "active",
-        "flags": {
-            "isFeatured": true,
-            "isBestSeller": true
-        },
-        "categories": [
-            "cat-groceries-001",
-            "cat-food-cupboard-001",
-            "cat-noodles-pasta-001"
-        ],
-        "images": [
-            {
-                "url": "/products/indomie-chicken.jpg",
-                "altText": "Indomie Chicken Flavor 70g"
-            }
-        ],
-        "variants": [
-            {
-                "id": "var-indomie-chicken-70g",
-                "sku": "IND-CHK-70G",
-                "name": "70g Pack",
-                "priceAmount": 25000,
-                "priceCurrency": "NGN",
-                "compareAtAmount": 30000,
-                "costPriceAmount": 20000,
-                "weightKg": "0.070",
-                "attributes": {
-                    "flavor": "Chicken",
-                    "weight": "70g"
-                },
-                "isActive": true,
-                "inventory": [
-                    {
-                        "storeId": "store-main-001",
-                        "stock": 5000
-                    }
-                ]
-            },
-            {
-                "id": "var-indomie-chicken-carton",
-                "sku": "IND-CHK-CARTON",
-                "name": "Carton (40 Packs)",
-                "priceAmount": 950000,
-                "priceCurrency": "NGN",
-                "compareAtAmount": 1000000,
-                "costPriceAmount": 800000,
-                "weightKg": "2.800",
-                "attributes": {
-                    "flavor": "Chicken",
-                    "weight": "2.8kg"
-                },
-                "isActive": true,
-                "inventory": [
-                    {
-                        "storeId": "store-main-001",
-                        "stock": 200
-                    }
-                ]
-            }
-        ],
-        "relatedProducts": [
-            "prod-indomie-onion-001"
-        ],
-        "featured": {
-            "section": "best-sellers",
-            "displayOrder": 2
-        }
-    },
-    {
-        "id": "prod-indomie-onion-001",
-        "brandId": "brand-indomie-001",
-        "canonicalCategoryId": "cat-noodles-pasta-001",
-        "title": "Indomie Instant Noodles Onion Chicken Flavor 70g",
-        "slug": "indomie-instant-noodles-onion-chicken-flavor-70g",
-        "description": "Indomie Onion Chicken Flavour has a rich and unique aroma of onion and chicken.",
-        "type": "simple",
-        "status": "active",
-        "flags": {
-            "isFeatured": false
-        },
-        "categories": [
-            "cat-groceries-001",
-            "cat-food-cupboard-001",
-            "cat-noodles-pasta-001"
-        ],
-        "images": [
-            {
-                "url": "/products/indomie-onion.jpg",
-                "altText": "Indomie Onion Chicken Flavor 70g"
-            }
-        ],
-        "variants": [
-            {
-                "id": "var-indomie-onion-70g",
-                "sku": "IND-ONION-70G",
-                "name": "70g Pack",
-                "priceAmount": 26000,
-                "priceCurrency": "NGN",
-                "compareAtAmount": 31000,
-                "costPriceAmount": 21000,
-                "weightKg": "0.070",
-                "attributes": {
-                    "flavor": "Onion Chicken",
-                    "weight": "70g"
-                },
-                "isActive": true,
-                "inventory": [
-                    {
-                        "storeId": "store-main-001",
-                        "stock": 3000
-                    }
-                ]
-            }
-        ],
-        "relatedProducts": [
-            "prod-indomie-chicken-001"
-        ],
-        "featured": null
-    },
-    {
-        "id": "prod-minimie-chinchin-001",
-        "brandId": "brand-minimie-001",
-        "canonicalCategoryId": "cat-snacks-001",
-        "title": "Minimie Chinchin",
-        "slug": "minimie-chinchin",
-        "description": "Crunchy and tasty chinchin snack for everyone.",
-        "type": "simple",
-        "status": "active",
-        "flags": {
-            "isFeatured": true
-        },
-        "categories": [
-            "cat-groceries-001",
-            "cat-snacks-001"
-        ],
-        "images": [
-            {
-                "url": "/products/minimie-chinchin.jpg",
-                "altText": "Minimie Chinchin"
-            }
-        ],
-        "variants": [
-            {
-                "id": "var-minimie-chinchin-regular",
-                "sku": "MIN-CHIN-REG",
-                "name": "Regular Pack",
-                "priceAmount": 15000,
-                "priceCurrency": "NGN",
-                "compareAtAmount": 18000,
-                "costPriceAmount": 10000,
-                "weightKg": "0.050",
-                "attributes": {
-                    "flavor": "Original"
-                },
-                "isActive": true,
-                "inventory": [
-                    {
-                        "storeId": "store-main-001",
-                        "stock": 1000
-                    }
-                ]
-            }
-        ],
-        "relatedProducts": [],
-        "featured": {
-            "section": "trending",
-            "displayOrder": 3
-        }
-    },
-    {
-        "id": "prod-power-oil-001",
-        "brandId": "brand-poweroil-001",
-        "canonicalCategoryId": "cat-cooking-oils-001",
-        "title": "Power Oil Vegetable Oil 3L",
-        "slug": "power-oil-vegetable-oil-3l",
-        "description": "Pure vegetable oil, zero cholesterol, healthy for the heart.",
-        "type": "simple",
-        "status": "active",
-        "flags": {
-            "isFeatured": true
-        },
-        "categories": [
-            "cat-groceries-001",
-            "cat-food-cupboard-001",
-            "cat-cooking-oils-001"
-        ],
-        "images": [
-            {
-                "url": "/products/power-oil-3l.jpg",
-                "altText": "Power Oil 3L"
-            }
-        ],
-        "variants": [
-            {
-                "id": "var-power-oil-3l",
-                "sku": "PWR-OIL-3L",
-                "name": "3 Litre Bottle",
-                "priceAmount": 850000,
-                "priceCurrency": "NGN",
-                "compareAtAmount": 900000,
-                "costPriceAmount": 700000,
-                "weightKg": "3.000",
-                "attributes": {
-                    "volume": "3L"
-                },
-                "isActive": true,
-                "inventory": [
-                    {
-                        "storeId": "store-main-001",
-                        "stock": 200
-                    }
-                ]
-            }
-        ],
-        "relatedProducts": [],
-        "featured": {
-            "section": "best-sellers",
-            "displayOrder": 3
-        }
-    },
-    {
-        "id": "prod-kelloggs-cornflakes-001",
-        "brandId": "brand-kelloggs-001",
-        "canonicalCategoryId": "cat-breakfast-cereals-001",
-        "title": "Kellogg's Corn Flakes",
-        "slug": "kelloggs-corn-flakes",
-        "description": "The original and best corn flakes. A nutritious breakfast for the whole family.",
-        "type": "simple",
-        "status": "active",
-        "flags": {
-            "isFeatured": false
-        },
-        "categories": [
-            "cat-groceries-001",
-            "cat-food-cupboard-001",
-            "cat-breakfast-cereals-001"
-        ],
-        "images": [
-            {
-                "url": "/products/kelloggs-cornflakes.jpg",
-                "altText": "Kellogg's Corn Flakes"
-            }
-        ],
-        "variants": [
-            {
-                "id": "var-kelloggs-cornflakes-500g",
-                "sku": "KEL-CORN-500G",
-                "name": "500g Box",
-                "priceAmount": 250000,
-                "priceCurrency": "NGN",
-                "compareAtAmount": 280000,
-                "costPriceAmount": 200000,
-                "weightKg": "0.500",
-                "attributes": {
-                    "weight": "500g"
-                },
-                "isActive": true,
-                "inventory": [
-                    {
-                        "storeId": "store-main-001",
-                        "stock": 150
-                    }
-                ]
-            }
-        ],
-        "relatedProducts": [],
-        "featured": null
-    },
-    {
-        "id": "prod-dano-milk-001",
-        "brandId": "brand-dano-001",
-        "canonicalCategoryId": "cat-dairy-001",
-        "title": "Dano Cool Cow Instant Milk Powder",
-        "slug": "dano-cool-cow-instant-milk-powder",
-        "description": "Rich and creamy milk powder, perfect for tea, coffee, and cereals.",
-        "type": "simple",
-        "status": "active",
-        "flags": {
-            "isFeatured": true
-        },
-        "categories": [
-            "cat-groceries-001",
-            "cat-dairy-001"
-        ],
-        "images": [
-            {
-                "url": "/products/dano-milk.jpg",
-                "altText": "Dano Cool Cow Milk"
-            }
-        ],
-        "variants": [
-            {
-                "id": "var-dano-milk-400g",
-                "sku": "DAN-MILK-400G",
-                "name": "400g Pouch",
-                "priceAmount": 320000,
-                "priceCurrency": "NGN",
-                "compareAtAmount": 350000,
-                "costPriceAmount": 250000,
-                "weightKg": "0.400",
-                "attributes": {
-                    "weight": "400g"
-                },
-                "isActive": true,
-                "inventory": [
-                    {
-                        "storeId": "store-main-001",
-                        "stock": 300
-                    }
-                ]
-            }
-        ],
-        "relatedProducts": [
-            "prod-kelloggs-cornflakes-001"
-        ],
-        "featured": {
-            "section": "trending",
-            "displayOrder": 4
-        }
-    }
+  {
+    "id": "prod-indomie-chicken-001",
+    "brandId": "brand-indomie-001",
+    "canonicalCategoryId": "cat-instant-noodles-001",
+    "title": "Indomie Instant Noodles Chicken Flavor 70g",
+    "slug": "indomie-instant-noodles-chicken-70g",
+    "description": "Classic Indomie chicken flavored instant noodles.",
+    "type": "simple",
+    "status": "active",
+    "flags": { "isFeatured": true },
+    "categories": ["cat-instant-noodles-001", "cat-noodles-pasta-001"],
+    "images": [{ "url": "/products/indomie-chicken.jpg", "altText": "Indomie Chicken 70g" }],
+    "variants": [
+      {
+        "id": "var-indomie-chicken-70g",
+        "sku": "IND-CHK-70G",
+        "name": "70g Pack",
+        "priceAmount": 25000,
+        "priceCurrency": "NGN",
+        "isActive": true,
+        "inventory": [{ "storeId": "store-main-001", "stock": 5000 }]
+      }
+    ],
+    "relatedProducts": [],
+    "featured": { "section": "best-sellers", "displayOrder": 1 }
+  },
+  {
+    "id": "prod-indomie-mi-goreng-001",
+    "brandId": "brand-indomie-001",
+    "canonicalCategoryId": "cat-instant-noodles-001",
+    "title": "Indomie Mi Goreng 85g",
+    "slug": "indomie-mi-goreng-85g",
+    "description": "Oriental-style fried instant noodles.",
+    "type": "simple",
+    "status": "active",
+    "flags": { "isFeatured": false },
+    "categories": ["cat-instant-noodles-001"],
+    "images": [{ "url": "/products/indomie-mi-goreng.jpg", "altText": "Indomie Mi Goreng" }],
+    "variants": [
+      {
+        "id": "var-indomie-mi-goreng-85g",
+        "sku": "IND-MG-85G",
+        "name": "85g Pack",
+        "priceAmount": 30000,
+        "priceCurrency": "NGN",
+        "isActive": true,
+        "inventory": [{ "storeId": "store-main-001", "stock": 1500 }]
+      }
+    ],
+    "relatedProducts": ["prod-indomie-chicken-001"],
+    "featured": null
+  },
+  {
+    "id": "prod-minimie-chinchin-001",
+    "brandId": "brand-minimie-001",
+    "canonicalCategoryId": "cat-snacks-cereals-001",
+    "title": "Minimie Chinchin",
+    "slug": "minimie-chinchin",
+    "description": "Crunchy and tasty chinchin snack for everyone.",
+    "type": "simple",
+    "status": "active",
+    "flags": { "isFeatured": true },
+    "categories": ["cat-snacks-cereals-001"],
+    "images": [{ "url": "/products/minimie-chinchin.jpg", "altText": "Minimie Chinchin" }],
+    "variants": [
+      {
+        "id": "var-minimie-chinchin-regular",
+        "sku": "MIN-CHIN-REG",
+        "name": "Regular Pack",
+        "priceAmount": 15000,
+        "priceCurrency": "NGN",
+        "isActive": true,
+        "inventory": [{ "storeId": "store-main-001", "stock": 1000 }]
+      }
+    ],
+    "relatedProducts": [],
+    "featured": { "section": "trending", "displayOrder": 3 }
+  },
+  {
+    "id": "prod-power-pasta-spaghetti-500g-001",
+    "brandId": "brand-powerpasta-001",
+    "canonicalCategoryId": "cat-noodles-pasta-001",
+    "title": "Power Pasta Spaghetti 500g",
+    "slug": "power-pasta-spaghetti-500g",
+    "description": "High-quality spaghetti pasta for family meals.",
+    "type": "simple",
+    "status": "active",
+    "flags": {},
+    "categories": ["cat-noodles-pasta-001"],
+    "images": [{ "url": "/products/power-pasta-500g.jpg", "altText": "Power Pasta Spaghetti 500g" }],
+    "variants": [
+      {
+        "id": "var-power-pasta-500g",
+        "sku": "PP-PST-500G",
+        "name": "500g Pack",
+        "priceAmount": 120000,
+        "priceCurrency": "NGN",
+        "isActive": true,
+        "inventory": [{ "storeId": "store-main-001", "stock": 220 }]
+      }
+    ],
+    "relatedProducts": [],
+    "featured": null
+  },
+  {
+    "id": "prod-mimee-noodles-001",
+    "brandId": "brand-mimee-001",
+    "canonicalCategoryId": "cat-instant-noodles-001",
+    "title": "Mimee Instant Noodles 85g",
+    "slug": "mimee-instant-noodles-85g",
+    "description": "Flavorful instant noodles for the whole family.",
+    "type": "simple",
+    "status": "active",
+    "flags": {},
+    "categories": ["cat-instant-noodles-001"],
+    "images": [{ "url": "/products/mimee-noodles-85g.jpg", "altText": "Mimee Instant Noodles" }],
+    "variants": [
+      {
+        "id": "var-mimee-noodles-85g",
+        "sku": "MIMEE-85G",
+        "name": "85g Pack",
+        "priceAmount": 20000,
+        "priceCurrency": "NGN",
+        "isActive": true,
+        "inventory": [{ "storeId": "store-main-001", "stock": 1200 }]
+      }
+    ],
+    "relatedProducts": [],
+    "featured": null
+  },
+  {
+    "id": "prod-indomie-cafe-bowl-001",
+    "brandId": "brand-indomie-cafe-001",
+    "canonicalCategoryId": "cat-instant-noodles-001",
+    "title": "Indomie Cafe Signature Bowl",
+    "slug": "indomie-cafe-signature-bowl",
+    "description": "A crafted Indomie experience prepared at the Indomie Cafe.",
+    "type": "simple",
+    "status": "active",
+    "flags": {},
+    "categories": ["cat-instant-noodles-001", "cat-all-products-001"],
+    "images": [{ "url": "/products/indomie-cafe-bowl.jpg", "altText": "Indomie Cafe Bowl" }],
+    "variants": [
+      {
+        "id": "var-indomie-cafe-bowl",
+        "sku": "IND-CAF-BOWL",
+        "name": "Single Bowl",
+        "priceAmount": 55000,
+        "priceCurrency": "NGN",
+        "isActive": true,
+        "inventory": [{ "storeId": "store-main-001", "stock": 100 }]
+      }
+    ],
+    "relatedProducts": ["prod-indomie-chicken-001"],
+    "featured": null
+  },
+  {
+    "id": "prod-power-oil-003l-001",
+    "brandId": "brand-poweroil-001",
+    "canonicalCategoryId": "cat-cooking-oils-001",
+    "title": "Power Oil Vegetable Oil 3L",
+    "slug": "power-oil-vegetable-3l",
+    "description": "Pure vegetable oil, zero cholesterol.",
+    "type": "simple",
+    "status": "active",
+    "flags": { "isFeatured": true },
+    "categories": ["cat-cooking-oils-001"],
+    "images": [{ "url": "/products/power-oil-3l.jpg", "altText": "Power Oil 3L" }],
+    "variants": [
+      {
+        "id": "var-power-oil-3l",
+        "sku": "PWR-OIL-3L",
+        "name": "3 Litre Bottle",
+        "priceAmount": 850000,
+        "priceCurrency": "NGN",
+        "isActive": true,
+        "inventory": [{ "storeId": "store-main-001", "stock": 200 }]
+      }
+    ],
+    "relatedProducts": [],
+    "featured": { "section": "best-sellers", "displayOrder": 2 }
+  },
+  {
+    "id": "prod-kelloggs-cornflakes-001",
+    "brandId": "brand-kelloggs-001",
+    "canonicalCategoryId": "cat-snacks-cereals-001",
+    "title": "Kellogg's Corn Flakes 500g",
+    "slug": "kelloggs-cornflakes-500g",
+    "description": "Crunchy & nutritious breakfast cereal.",
+    "type": "simple",
+    "status": "active",
+    "flags": {},
+    "categories": ["cat-snacks-cereals-001"],
+    "images": [{ "url": "/products/kelloggs-cornflakes.jpg", "altText": "Kellogg's Corn Flakes" }],
+    "variants": [
+      {
+        "id": "var-kelloggs-cornflakes-500g",
+        "sku": "KEL-CORN-500G",
+        "name": "500g Box",
+        "priceAmount": 250000,
+        "priceCurrency": "NGN",
+        "isActive": true,
+        "inventory": [{ "storeId": "store-main-001", "stock": 150 }]
+      }
+    ],
+    "relatedProducts": [],
+    "featured": null
+  },
+  {
+    "id": "prod-dano-milk-001",
+    "brandId": "brand-dano-001",
+    "canonicalCategoryId": "cat-beverages-001",
+    "title": "Dano Cool Cow Instant Milk Powder 400g",
+    "slug": "dano-cool-cow-400g",
+    "description": "Rich and creamy milk powder for tea and cereal.",
+    "type": "simple",
+    "status": "active",
+    "flags": { "isFeatured": true },
+    "categories": ["cat-beverages-001"],
+    "images": [{ "url": "/products/dano-milk-400g.jpg", "altText": "Dano Cool Cow 400g" }],
+    "variants": [
+      {
+        "id": "var-dano-milk-400g",
+        "sku": "DAN-MILK-400G",
+        "name": "400g Pouch",
+        "priceAmount": 320000,
+        "priceCurrency": "NGN",
+        "isActive": true,
+        "inventory": [{ "storeId": "store-main-001", "stock": 300 }]
+      }
+    ],
+    "relatedProducts": [],
+    "featured": { "section": "trending", "displayOrder": 4 }
+  },
+  {
+    "id": "prod-guinness-zero-330ml-001",
+    "brandId": "brand-guinness-001",
+    "canonicalCategoryId": "cat-beverages-001",
+    "title": "Guinness Zero 330ml",
+    "slug": "guinness-zero-330ml",
+    "description": "Non-alcoholic stout with classic taste.",
+    "type": "simple",
+    "status": "active",
+    "flags": {},
+    "categories": ["cat-beverages-001"],
+    "images": [{ "url": "/products/guinness-zero-330ml.jpg", "altText": "Guinness Zero 330ml" }],
+    "variants": [
+      {
+        "id": "var-guinness-zero-330ml",
+        "sku": "GNS-ZERO-330",
+        "name": "330ml Can",
+        "priceAmount": 45000,
+        "priceCurrency": "NGN",
+        "isActive": true,
+        "inventory": [{ "storeId": "store-main-001", "stock": 500 }]
+      }
+    ],
+    "relatedProducts": [],
+    "featured": null
+  },
+  {
+    "id": "prod-lush-shampoo-250ml-001",
+    "brandId": "brand-lush-001",
+    "canonicalCategoryId": "cat-hair-care-001",
+    "title": "Lush Repair Shampoo 250ml",
+    "slug": "lush-repair-shampoo-250ml",
+    "description": "Nourishing repair shampoo for damaged hair.",
+    "type": "simple",
+    "status": "active",
+    "flags": {},
+    "categories": ["cat-hair-care-001"],
+    "images": [{ "url": "/products/lush-shampoo-250ml.jpg", "altText": "Lush Repair Shampoo 250ml" }],
+    "variants": [
+      {
+        "id": "var-lush-shampoo-250ml",
+        "sku": "LUSH-SHMP-250",
+        "name": "250ml Bottle",
+        "priceAmount": 299000,
+        "priceCurrency": "NGN",
+        "isActive": true,
+        "inventory": [{ "storeId": "store-main-001", "stock": 250 }]
+      }
+    ],
+    "relatedProducts": [],
+    "featured": null
+  },
+  {
+    "id": "prod-colgate-total-100g-001",
+    "brandId": "brand-colgate-001",
+    "canonicalCategoryId": "cat-oral-care-001",
+    "title": "Colgate Total Toothpaste 100g",
+    "slug": "colgate-total-100g",
+    "description": "Complete daily oral protection.",
+    "type": "simple",
+    "status": "active",
+    "flags": {},
+    "categories": ["cat-oral-care-001"],
+    "images": [{ "url": "/products/colgate-total-100g.jpg", "altText": "Colgate Total 100g" }],
+    "variants": [
+      {
+        "id": "var-colgate-total-100g",
+        "sku": "COL-TOT-100G",
+        "name": "100g Tube",
+        "priceAmount": 95000,
+        "priceCurrency": "NGN",
+        "isActive": true,
+        "inventory": [{ "storeId": "store-main-001", "stock": 800 }]
+      }
+    ],
+    "relatedProducts": [],
+    "featured": null
+  }
 ]

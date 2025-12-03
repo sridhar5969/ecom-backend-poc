@@ -46,8 +46,24 @@ export class AuthController {
 			const refreshToken =
 				req.cookies['refreshToken'] ?? req.body.refreshToken;
 
+			if (!refreshToken) {
+				console.error(
+					`ERROR_${task}: Refresh token missing in request`,
+				);
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: 'Refresh token missing' });
+			}
+
 			const data =
 				await AuthController.authService.refreshTokens(refreshToken);
+
+			if (!data) {
+				console.error(`ERROR_${task}: Invalid token response`);
+				return res
+					.status(StatusCodes.INTERNAL_SERVER_ERROR)
+					.json({ message: 'Failed to refresh tokens' });
+			}
 
 			setAuthCookies(res, data.accessToken, data.refreshToken);
 
