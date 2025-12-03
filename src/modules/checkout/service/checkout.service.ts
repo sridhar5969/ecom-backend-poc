@@ -3,7 +3,7 @@ import { CheckoutPayloadType } from '../controller/validator';
 import { BadRequestError } from '@/abstractions/AppError';
 import { db } from '@/database';
 import { carts, orders, orderItems } from '@/database/schema';
-import { PaymentRegistry } from '@/payments/service/gateways/PaymentGatewayFactory';
+import { PaymentRegistry } from '@/modules/payments/service/gateways/PaymentGatewayFactory';
 
 export class CartCheckoutService {
 	async processCheckout(

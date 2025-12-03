@@ -1,7 +1,7 @@
 import {
 	CreateSessionRequest,
 	PaymentSession,
-} from '@/payments/types/payments';
+} from '@/modules/payments/types/payments';
 
 export interface IPaymentGateway {
 	id: string; // e.g. 'traction'

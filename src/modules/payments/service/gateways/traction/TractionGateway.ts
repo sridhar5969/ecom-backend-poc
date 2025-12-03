@@ -4,7 +4,7 @@ import { IPaymentGateway } from '../IPaymentGateway';
 import {
 	CreateSessionRequest,
 	PaymentSession,
-} from '@/payments/types/payments';
+} from '@/modules/payments/types/payments';
 
 type TractionConfig = {
 	baseUrl: string;
