@@ -122,10 +122,14 @@ export class CartCheckoutService {
 					amount: paymentSession.amountKobo,
 					expiresAt: paymentSession.expiresAt,
 					status: paymentSession.status,
+					providerResponse: paymentSession.providerResponse,
 				},
 				message: 'Please complete payment to confirm your order',
 			};
 		}
+
+		// clean up cart after order placement
+		await db.delete(carts).where(eq(carts.id, cart.id));
 
 		// Cash on Delivery
 		return {
