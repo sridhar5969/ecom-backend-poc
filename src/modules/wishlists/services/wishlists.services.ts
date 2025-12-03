@@ -27,10 +27,6 @@ export class WishlistsService {
 			where: eq(wishlists.userId, userId),
 		});
 
-		if (userWishLists.length === 0) {
-			throw new NotFoundError('No wishlists found for this user');
-		}
-
 		return userWishLists;
 	}
 
