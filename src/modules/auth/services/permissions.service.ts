@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { NotFoundError } from '@/abstractions/AppError';
 import { db } from '@/database';
 import {
 	permissions,
@@ -60,6 +61,9 @@ export class PermissionsManagementService {
 			)
 			.innerJoin(users, eq(users.role, rolePermissions.role))
 			.where(eq(users.id, userId));
+		if (userData.length === 0) {
+			throw new NotFoundError('User not found');
+		}
 		return {
 			id: userId,
 			role: userData[0].role,

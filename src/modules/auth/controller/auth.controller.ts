@@ -9,6 +9,34 @@ export class AuthController {
 
 	constructor() {}
 	// ---------------------------------
+	// REGISTER
+	// ---------------------------------
+	public static async register(req: Request, res: Response) {
+		const task = 'AUTH_REGISTER';
+
+		try {
+			const data = await AuthController.authService.registerUser(
+				req.body,
+			);
+
+			// ----------------------------------------
+			// SET COOKIES HERE
+			// ----------------------------------------
+			setAuthCookies(res, data.accessToken, data.refreshToken);
+
+			const result = successResponse(
+				{ role: data.role, authMethod: data.authMethod },
+				'Registration successful',
+			);
+
+			return res.status(StatusCodes.CREATED).json(result);
+		} catch (error) {
+			console.error(`ERROR_${task}:`, error);
+			throw error;
+		}
+	}
+
+	// ---------------------------------
 	// LOGIN
 	// ---------------------------------
 	public static async login(req: Request, res: Response) {
@@ -44,7 +72,7 @@ export class AuthController {
 
 		try {
 			const refreshToken =
-				req.cookies['refreshToken'] ?? req.body.refreshToken;
+				req?.cookies['refreshToken'] ?? req?.body?.refreshToken;
 
 			if (!refreshToken) {
 				console.error(

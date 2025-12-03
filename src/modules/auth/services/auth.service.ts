@@ -2,7 +2,10 @@ import { eq } from 'drizzle-orm';
 import { StatusCodes } from 'http-status-codes';
 import jwt from 'jsonwebtoken';
 
-import { LoginWebPostParser } from '../controller/validator';
+import {
+	LoginWebPostParser,
+	RegisterWebPostParser,
+} from '../controller/validator';
 import {
 	getUserProfileFromMicrosoft,
 	verifyPassword,
@@ -11,8 +14,58 @@ import AppError from '@/abstractions/AppError';
 import { db } from '@/database';
 import { User, users, userSessions } from '@/database/schema';
 import env from '@/env';
+import Hash from '@/utils/hash';
 
 export class AuthWebService {
+	// ----------------------------------------------------------------
+	// REGISTER
+	// ----------------------------------------------------------------
+	public async registerUser(body: any) {
+		const parsed = RegisterWebPostParser.safeParse(body);
+		if (!parsed.success) throw parsed.error;
+
+		const { firstName, lastName, email, password } = parsed.data;
+
+		// Check if user exists
+		const [existing] = await db
+			.select()
+			.from(users)
+			.where(eq(users.email, email.toLowerCase()))
+			.execute();
+
+		if (existing) {
+			throw new AppError('User already exists', StatusCodes.CONFLICT);
+		}
+
+		// Hash password
+		const passwordHash = await Hash.hash(password);
+
+		// Create user
+		const [newUser] = await db
+			.insert(users)
+			.values({
+				email: email.toLowerCase(),
+				name: `${firstName} ${lastName}`,
+				passwordHash,
+				role: 'customer',
+				isActive: true,
+				primaryAuthMethod: 'email_password',
+			})
+			.returning();
+
+		// Issue tokens
+		const accessToken = this.generateAccessToken(newUser);
+		const refreshToken = await this.createSession(newUser);
+
+		return {
+			accessToken,
+			refreshToken,
+			role: newUser.role,
+			authMethod: newUser.primaryAuthMethod,
+			mode: env.AUTH_MODE,
+		};
+	}
+
 	// ----------------------------------------------------------------
 	// LOGIN
 	// ----------------------------------------------------------------
