@@ -15,7 +15,7 @@ const envMap = {
 const nodeEnv = (process.env.NODE_ENV?.trim() || 'local').toLowerCase();
 const envFile = envMap[nodeEnv] || '.env.local';
 
-config({ path: path.resolve(process.cwd(), envFile) });
+config({});
 
 const stringBoolean = z
 	.string()

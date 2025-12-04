@@ -130,9 +130,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-Dockerfile
-
-
-
-
-
+.env*
