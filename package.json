@@ -13,7 +13,7 @@
         "build:qas": "cross-env NODE_ENV=qas && shx cp .env.qas ./build/.env.qas",
         "build:uat": "cross-env NODE_ENV=uat && shx cp .env.uat ./build/.env.uat",
         "build:prod": "cross-env NODE_ENV=prod && shx cp .env.prod ./build/.env.prod",
-        "start": "node -r tsconfig-paths/register build/src/server.js",
+        "start": "node -r tsconfig-paths/register build/server.js",
         "start:dev": "cross-env NODE_ENV=dev node -r tsconfig-paths/register build/src/server.js",
         "start:qas": "cross-env NODE_ENV=qas node -r tsconfig-paths/register build/src/server.js",
         "start:uat": "cross-env NODE_ENV=uat node -r tsconfig-paths/register build/src/server.js",
