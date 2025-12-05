@@ -138,14 +138,14 @@ function setAuthCookies(
 	refreshToken: string,
 ) {
 	const isLocal = env.NODE_ENV === 'local';
-	const domain = !isLocal ? env.COOKIE_DOMAIN : undefined;
+	// const domain = !isLocal ? env.COOKIE_DOMAIN : undefined;
 
 	// Access Token cookie
 	res.cookie('accessToken', accessToken, {
 		httpOnly: false,
 		secure: !isLocal,
 		sameSite: !isLocal ? 'none' : 'lax',
-		domain,
+		// domain,
 		maxAge: 15 * 60 * 1000,
 	});
 
@@ -154,7 +154,7 @@ function setAuthCookies(
 		httpOnly: true,
 		secure: !isLocal,
 		sameSite: !isLocal ? 'none' : 'lax',
-		domain,
+		// domain,
 		maxAge: 7 * 24 * 60 * 60 * 1000,
 	});
 }
