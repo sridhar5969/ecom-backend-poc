@@ -346,7 +346,9 @@ export async function seedProducts() {
 		} = productData;
 
 		const productMetadataFromSource =
-			productFields.metadata ?? (productData as any).metadata;
+			'metadata' in productData
+				? (productData as any).metadata
+				: undefined;
 
 		const normalizedMetadata = {
 			...(productMetadataFromSource ?? {}),

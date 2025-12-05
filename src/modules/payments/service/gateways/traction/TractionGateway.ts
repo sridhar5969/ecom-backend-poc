@@ -120,7 +120,8 @@ export class TractionGateway implements IPaymentGateway {
 			// basic shape validation
 			if (!payload?.payment_session) return { valid: false };
 			return { valid: true, payload };
-		} catch (err) {
+		} catch (err: unknown) {
+			console.error('Traction webhook verification error:', err);
 			return { valid: false };
 		}
 	}

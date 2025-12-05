@@ -2,6 +2,7 @@ export type CreateSessionRequest = {
 	amountKobo: number; // in kobo or smallest unit (NGN -> kobo)
 	paymentSession: string; // client-side unique id (order id / txn id)
 	metadata?: Record<string, any>;
+	currency?: string;
 };
 
 export type PaymentSession = {
@@ -13,4 +14,5 @@ export type PaymentSession = {
 	expiresAt?: string; // ISO
 	status: 'pending' | 'completed' | 'rejected' | 'expired' | 'unknown';
 	providerResponse?: any;
+	url?: string;
 };

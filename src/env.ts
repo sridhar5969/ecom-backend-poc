@@ -1,21 +1,21 @@
-import path from 'path';
+// import path from 'path';
 import { config } from 'dotenv';
 import { z } from 'zod/v4';
 import { EnvErrorLoggger } from './utils/logger/chalk';
 
-const envMap = {
-	prod: '.env.prod',
-	dev: '.env.dev',
-	test: '.env.qass',
-	uat: '.env.uat',
-	qas: '.env.qas',
-	local: '.env.local',
-};
+// const envMap = {
+// 	prod: '.env.prod',
+// 	dev: '.env.dev',
+// 	test: '.env.qass',
+// 	uat: '.env.uat',
+// 	qas: '.env.qas',
+// 	local: '.env.local',
+// };
 
-const nodeEnv = (process.env.NODE_ENV?.trim() || 'local').toLowerCase();
-const envFile = envMap[nodeEnv] || '.env.local';
+// const nodeEnv = (process.env.NODE_ENV?.trim() || 'local').toLowerCase();
+// const envFile = envMap[nodeEnv] || '.env.local';
 
-config({ path: path.resolve(process.cwd(), envFile) });
+config({});
 
 const stringBoolean = z
 	.string()
@@ -65,13 +65,18 @@ const envSchema = z.object({
 
 	//payment gateway - traction
 	PAYMENT_PROVIDER: z
-		.enum(['traction', 'paystack', 'flutterwave'])
-		.default('traction'),
+		.enum(['traction', 'paystack', 'flutterwave', 'stripe'])
+		.default('stripe'),
 
 	TRACTION_BASE_URL: z.string().optional(),
 	TRACTION_CLIENT_ID: z.string().optional(),
 	TRACTION_CLIENT_SECRET: z.string().optional(),
 	TRACTION_WEBHOOK_SECRET: z.string().optional(),
+
+	STRIPE_SECRET_KEY: z.string().optional(),
+	STRIPE_WEBHOOK_SECRET: z.string().optional(),
+	STRIPE_SUCCESS_URL: z.string().optional(),
+	STRIPE_CANCEL_URL: z.string().optional(),
 });
 
 export function initEnv() {

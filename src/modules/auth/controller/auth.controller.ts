@@ -138,24 +138,24 @@ function setAuthCookies(
 	refreshToken: string,
 ) {
 	const isLocal = env.NODE_ENV === 'local';
-	const domain = !isLocal ? env.COOKIE_DOMAIN : undefined;
+	// const domain = !isLocal ? env.COOKIE_DOMAIN : undefined;
 
 	// Access Token cookie
 	res.cookie('accessToken', accessToken, {
-		httpOnly: false, // readable in frontend
-		// secure: !isLocal, // only https in prod
-		// sameSite: !isLocal ? 'none' : 'lax',
-		domain,
-		maxAge: 15 * 60 * 1000, // 15 minutes
+		httpOnly: false,
+		secure: !isLocal,
+		sameSite: !isLocal ? 'none' : 'lax',
+		// domain,
+		maxAge: 15 * 60 * 1000,
 	});
 
 	// Refresh Token cookie
 	res.cookie('refreshToken', refreshToken, {
-		httpOnly: true, // http-only
-		// secure: !isLocal,
-		// sameSite: !isLocal ? 'none' : 'lax',
-		domain,
-		maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+		httpOnly: true,
+		secure: !isLocal,
+		sameSite: !isLocal ? 'none' : 'lax',
+		// domain,
+		maxAge: 7 * 24 * 60 * 60 * 1000,
 	});
 }
 
