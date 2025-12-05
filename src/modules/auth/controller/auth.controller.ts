@@ -142,20 +142,20 @@ function setAuthCookies(
 
 	// Access Token cookie
 	res.cookie('accessToken', accessToken, {
-		httpOnly: false, // readable in frontend
-		// secure: !isLocal, // only https in prod
-		// sameSite: !isLocal ? 'none' : 'lax',
+		httpOnly: false,
+		secure: !isLocal,
+		sameSite: !isLocal ? 'none' : 'lax',
 		domain,
-		maxAge: 15 * 60 * 1000, // 15 minutes
+		maxAge: 15 * 60 * 1000,
 	});
 
 	// Refresh Token cookie
 	res.cookie('refreshToken', refreshToken, {
-		httpOnly: true, // http-only
-		// secure: !isLocal,
-		// sameSite: !isLocal ? 'none' : 'lax',
+		httpOnly: true,
+		secure: !isLocal,
+		sameSite: !isLocal ? 'none' : 'lax',
 		domain,
-		maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+		maxAge: 7 * 24 * 60 * 60 * 1000,
 	});
 }
 
