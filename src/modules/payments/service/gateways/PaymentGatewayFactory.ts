@@ -1,4 +1,5 @@
 import { IPaymentGateway } from './IPaymentGateway';
+import { StripeGateway } from './stripe/StripeGateway';
 import { TractionGateway } from './traction/TractionGateway';
 import env from '@/env';
 
@@ -41,6 +42,20 @@ export class PaymentRegistry {
 		// if (env.FLUTTERWAVE_SECRET) {
 		//    registerGateway(new FlutterwaveGateway(env.FLUTTERWAVE_SECRET));
 		// }
+
+		// STRIPE
+		if (env.STRIPE_SECRET_KEY) {
+			const stripe = new StripeGateway({
+				secretKey: env.STRIPE_SECRET_KEY,
+				webhookSecret: env.STRIPE_WEBHOOK_SECRET,
+				successUrl:
+					env.STRIPE_SUCCESS_URL ||
+					`${env.APP_URI}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+				cancelUrl:
+					env.STRIPE_CANCEL_URL || `${env.APP_URI}/checkout/cancel`,
+			});
+			registerGateway(stripe);
+		}
 	}
 
 	current() {

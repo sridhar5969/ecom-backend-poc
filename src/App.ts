@@ -44,7 +44,15 @@ export default class App {
 		this.express.use(cookieParser());
 
 		// Body parsing
-		this.express.use(express.json({ limit: '10000mb' }));
+		// Body parsing
+		this.express.use(
+			express.json({
+				limit: '10000mb',
+				verify: (req: any, res, buf) => {
+					req.rawBody = buf;
+				},
+			}),
+		);
 		this.express.use(
 			express.urlencoded({ limit: '10000mb', extended: true }),
 		);

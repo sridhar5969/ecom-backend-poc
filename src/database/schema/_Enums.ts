@@ -52,6 +52,7 @@ export const transactionTypeEnum = pgEnum('transaction_type', [
 	'refund',
 	'void',
 	'dispute',
+	'payment',
 ]);
 
 export const transactionStatusEnum = pgEnum('transaction_status', [
