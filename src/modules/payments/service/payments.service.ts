@@ -152,18 +152,33 @@ export class PaymentsService {
 				where: eq(orders.id, orderId),
 			});
 
-			new WhatsAppService().sendPaymentConfirmation(
-				customerPhone,
-				customerData?.name || 'Customer',
-				orderId,
-				(updatedOrder?.total || 0).toString(),
-				updatedOrder?.currency || 'NGN', // Force NGN as requested
-				items.map((item) => ({
-					name: item.name || 'Product',
-					quantity: item.quantity || 1,
-					price: (item.price || 0) / 100,
-				})),
-			);
+			new WhatsAppService()
+				.sendPaymentConfirmation(
+					customerPhone,
+					customerData?.name || 'Customer',
+					orderId,
+					(updatedOrder?.total || 0).toString(),
+					updatedOrder?.currency || 'NGN', // Force NGN as requested
+					items.map((item) => ({
+						name: item.name || 'Product',
+						quantity: item.quantity || 1,
+						price: (item.price || 0) / 100,
+					})),
+				)
+				.catch((error) => {
+					logger.error(
+						`Failed to send WhatsApp message for order ${orderId}`,
+						{ error },
+					);
+				})
+				.finally(() => {
+					logger.info(
+						`WhatsApp message process completed for order ${orderId}`,
+					);
+				})
+				.then(() => {
+					logger.info(`WhatsApp message sent for order ${orderId}`);
+				});
 
 			// Clear cart if payment successful
 			if (status === 'paid' && updatedOrder?.metadata) {

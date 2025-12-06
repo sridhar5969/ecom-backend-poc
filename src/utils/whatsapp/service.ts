@@ -46,15 +46,15 @@ export class WhatsAppService {
 						text: footerText,
 					},
 					action: {
-						buttons: [
-							{
-								type: 'reply',
-								reply: {
-									id: 'BACK',
-									title: '🔙 Back',
-								},
-							},
-						],
+						// buttons: [
+						// 	{
+						// 		type: 'reply',
+						// 		reply: {
+						// 			id: 'BACK',
+						// 			title: '🔙 Back',
+						// 		},
+						// 	},
+						// ],
 					},
 				},
 			};
