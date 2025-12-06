@@ -72,6 +72,7 @@ export class CartCheckoutService {
 					billingAddress: billingAddress as any,
 					metadata: {
 						paymentMethod: payload.paymentMethod,
+						cartId: cart.id,
 					},
 				})
 				.returning();

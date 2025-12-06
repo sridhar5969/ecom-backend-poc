@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { db } from '@/database';
-import { orders, orderTransactions } from '@/database/schema';
+import { orders, orderTransactions, carts, cartItems } from '@/database/schema';
 import { PaymentRegistry } from '@/modules/payments/service/gateways/PaymentGatewayFactory';
 import logger from '@/utils/logger/logger';
 
@@ -97,14 +97,15 @@ export class PaymentsService {
 	) {
 		await db.transaction(async (tx) => {
 			// Update order status
-			await tx
+			const [updatedOrder] = await tx
 				.update(orders)
 				.set({
 					paymentStatus: status === 'paid' ? 'paid' : 'failed',
-					status: status === 'paid' ? 'paid' : 'cancelled', // Or keep as pending/processing
+					status: status === 'paid' ? 'paid' : 'cancelled',
 					updatedAt: new Date(),
 				})
-				.where(eq(orders.id, orderId));
+				.where(eq(orders.id, orderId))
+				.returning({ metadata: orders.metadata });
 
 			// Record transaction
 			if (transactionId) {
@@ -117,6 +118,30 @@ export class PaymentsService {
 					providerTransactionId: transactionId,
 					currency: 'USD', // Should be dynamic
 				});
+			}
+
+			// Clear cart if payment successful
+			if (status === 'paid' && updatedOrder?.metadata) {
+				const metadata = updatedOrder.metadata as Record<string, any>;
+				if (metadata.cartId) {
+					try {
+						await tx
+							.delete(cartItems)
+							.where(eq(cartItems.cartId, metadata.cartId));
+						await tx
+							.delete(carts)
+							.where(eq(carts.id, metadata.cartId));
+						logger.info(
+							`Cart ${metadata.cartId} cleared for order ${orderId}`,
+						);
+					} catch (error) {
+						logger.error(
+							`Failed to clear cart ${metadata.cartId} for order ${orderId}`,
+							{ error },
+						);
+						// Don't throw, so we don't rollback the payment status
+					}
+				}
 			}
 		});
 	}
