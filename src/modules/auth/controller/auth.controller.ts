@@ -25,7 +25,11 @@ export class AuthController {
 			setAuthCookies(res, data.accessToken, data.refreshToken);
 
 			const result = successResponse(
-				{ role: data.role, authMethod: data.authMethod },
+				{
+					role: data.role,
+					authMethod: data.authMethod,
+					accessToken: data.accessToken,
+				},
 				'Registration successful',
 			);
 
@@ -56,7 +60,11 @@ export class AuthController {
 			setAuthCookies(res, data.accessToken, data.refreshToken);
 
 			const result = successResponse(
-				{ role: data.role, authMethod: data.authMethod },
+				{
+					role: data.role,
+					authMethod: data.authMethod,
+					accessToken: data.accessToken,
+				},
 				'Login successful',
 			);
 
@@ -141,22 +149,22 @@ function setAuthCookies(
 	// const domain = !isLocal ? env.COOKIE_DOMAIN : undefined;
 
 	// Access Token cookie
-	res.cookie('accessToken', accessToken, {
-		httpOnly: false,
-		secure: !isLocal,
-		sameSite: !isLocal ? 'none' : 'lax',
-		// domain,
-		maxAge: 15 * 60 * 1000,
-	});
+	// res.cookie('accessToken', accessToken, {
+	// 	httpOnly: false,
+	// 	secure: !isLocal,
+	// 	sameSite: !isLocal ? 'none' : 'lax',
+	// 	// domain,
+	// 	maxAge: 15 * 60 * 1000,
+	// });
 
-	// Refresh Token cookie
-	res.cookie('refreshToken', refreshToken, {
-		httpOnly: true,
-		secure: !isLocal,
-		sameSite: !isLocal ? 'none' : 'lax',
-		// domain,
-		maxAge: 7 * 24 * 60 * 60 * 1000,
-	});
+	// // Refresh Token cookie
+	// res.cookie('refreshToken', refreshToken, {
+	// 	httpOnly: true,
+	// 	secure: !isLocal,
+	// 	sameSite: !isLocal ? 'none' : 'lax',
+	// 	// domain,
+	// 	maxAge: 7 * 24 * 60 * 60 * 1000,
+	// });
 }
 
 function clearAuthCookies(res: Response) {
