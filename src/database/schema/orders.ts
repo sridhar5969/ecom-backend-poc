@@ -22,6 +22,17 @@ import { productVariants } from './products';
 import { currencies } from './system';
 import { users } from './users';
 
+export type ShippingAndBillingAddress = {
+	city: string;
+	line1: string;
+	line2: string;
+	phone: string;
+	state: string;
+	country: string;
+	fullName: string;
+	postalCode: string;
+};
+
 export const orders = pgTable('orders', {
 	id: uuid('id').defaultRandom().primaryKey(),
 	userId: uuid('user_id').references(() => users.id),
@@ -36,8 +47,9 @@ export const orders = pgTable('orders', {
 	paymentIntentId: varchar('payment_intent_id'),
 	fulfillmentType: fulfillmentTypeEnum('fulfillment_type'),
 	storeId: uuid('store_id').references(() => stores.id),
-	shippingAddress: jsonb('shipping_address'),
-	billingAddress: jsonb('billing_address'),
+	shippingAddress:
+		jsonb('shipping_address').$type<ShippingAndBillingAddress>(),
+	billingAddress: jsonb('billing_address').$type<ShippingAndBillingAddress>(),
 	metadata: jsonb('metadata'),
 	createdAt: timestamp('created_at').defaultNow(),
 	updatedAt: timestamp('updated_at'),

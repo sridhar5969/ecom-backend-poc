@@ -77,6 +77,10 @@ const envSchema = z.object({
 	STRIPE_WEBHOOK_SECRET: z.string().optional(),
 	STRIPE_SUCCESS_URL: z.string().optional(),
 	STRIPE_CANCEL_URL: z.string().optional(),
+
+	WHATSAPP_ACCESS_TOKEN: z.string().optional(),
+	WHATSAPP_PHONE_NUMBER_ID: z.string().optional(),
+	WHATSAPP_API_VERSION: z.string().optional(),
 });
 
 export function initEnv() {

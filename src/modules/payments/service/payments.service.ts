@@ -1,8 +1,15 @@
 import { eq } from 'drizzle-orm';
 import { db } from '@/database';
-import { orders, orderTransactions, carts, cartItems } from '@/database/schema';
+import {
+	orders,
+	orderTransactions,
+	carts,
+	cartItems,
+	orderItems,
+} from '@/database/schema';
 import { PaymentRegistry } from '@/modules/payments/service/gateways/PaymentGatewayFactory';
 import logger from '@/utils/logger/logger';
+import { WhatsAppService } from '@/utils/whatsapp/service';
 
 export class PaymentsService {
 	async handleWebhook(
@@ -105,7 +112,13 @@ export class PaymentsService {
 					updatedAt: new Date(),
 				})
 				.where(eq(orders.id, orderId))
-				.returning({ metadata: orders.metadata });
+				.returning({
+					metadata: orders.metadata,
+					shippingAddress: orders.shippingAddress,
+					billingAddress: orders.billingAddress,
+					total: orders.grandTotal,
+					currency: orders.currency,
+				});
 
 			// Record transaction
 			if (transactionId) {
@@ -116,9 +129,41 @@ export class PaymentsService {
 					amount: 0, // We might need to fetch the amount from the order or the event
 					provider: 'stripe', // Should be dynamic
 					providerTransactionId: transactionId,
-					currency: 'USD', // Should be dynamic
+					currency: updatedOrder?.currency || 'NGN', // Should be dynamic
 				});
 			}
+
+			const shippingAddress = updatedOrder?.shippingAddress;
+			const billingAddress = updatedOrder?.billingAddress;
+
+			const customerPhone =
+				billingAddress?.phone || shippingAddress?.phone;
+
+			// Fetch order items for WhatsApp message
+			const items = await tx
+				.select({
+					name: orderItems.productName,
+					quantity: orderItems.quantity,
+					price: orderItems.unitPriceAmount,
+				})
+				.from(orderItems)
+				.where(eq(orderItems.orderId, orderId));
+			const customerData = await tx.query.users.findFirst({
+				where: eq(orders.id, orderId),
+			});
+
+			new WhatsAppService().sendPaymentConfirmation(
+				customerPhone,
+				customerData?.name || 'Customer',
+				orderId,
+				(updatedOrder?.total || 0).toString(),
+				updatedOrder?.currency || 'NGN', // Force NGN as requested
+				items.map((item) => ({
+					name: item.name || 'Product',
+					quantity: item.quantity || 1,
+					price: (item.price || 0) / 100,
+				})),
+			);
 
 			// Clear cart if payment successful
 			if (status === 'paid' && updatedOrder?.metadata) {
