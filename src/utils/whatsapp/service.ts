@@ -46,15 +46,15 @@ export class WhatsAppService {
 						text: footerText,
 					},
 					action: {
-						// buttons: [
-						// 	{
-						// 		type: 'reply',
-						// 		reply: {
-						// 			id: 'BACK',
-						// 			title: '🔙 Back',
-						// 		},
-						// 	},
-						// ],
+						buttons: [
+							{
+								type: 'reply',
+								reply: {
+									id: `track_order_${orderNo}`, // Unique ID for the button click event
+									title: 'Track Order', // Max 20 characters
+								},
+							},
+						],
 					},
 				},
 			};
