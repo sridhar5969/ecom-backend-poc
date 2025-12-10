@@ -4,7 +4,6 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import router from './router';
-import env from '@/env';
 // import { initLogWatcher } from '@/lib/watcher';
 import addErrorHandler from '@/middleware/error-handler';
 import requestLogger from '@/middleware/requestLogger';
@@ -58,7 +57,7 @@ export default class App {
 		);
 		// add multiple cors options as per your use
 		const corsOptions = {
-			origin: [env.APP_URI],
+			origin: '*',
 			credentials: true,
 		};
 		this.express.use(cors(corsOptions));
